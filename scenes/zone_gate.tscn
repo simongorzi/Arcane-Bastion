@@ -1,0 +1,53 @@
+[gd_scene load_steps=7 format=3 uid="uid://zonegate001"]
+
+[ext_resource type="Script" path="res://scripts/zone_gate.gd" id="1_gate_script"]
+[ext_resource type="PackedScene" path="res://assets/castle/Models/GLB format/metal-gate.glb" id="2_metal_gate"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_gate_col"]
+size = Vector3(5.2, 5.5, 1.2)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_dust"]
+emission_shape = 3
+emission_box_extents = Vector3(2.5, 0.2, 0.5)
+direction = Vector3(0, 1, 0)
+spread = 60.0
+initial_velocity_min = 1.0
+initial_velocity_max = 2.5
+gravity = Vector3(0, -1, 0)
+scale_min = 0.1
+scale_max = 0.3
+color = Color(0.65, 0.6, 0.5, 0.7)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dust"]
+transparency = 1
+albedo_color = Color(0.7, 0.65, 0.55, 0.6)
+roughness = 0.9
+
+[sub_resource type="BoxMesh" id="BoxMesh_dust"]
+material = SubResource("StandardMaterial3D_dust")
+size = Vector3(0.15, 0.15, 0.15)
+
+[node name="ZoneGate" type="Node3D"]
+script = ExtResource("1_gate_script")
+
+[node name="GateMesh" type="Node3D" parent="."]
+
+[node name="Model" parent="GateMesh" instance=ExtResource("2_metal_gate")]
+transform = Transform3D(-3.0598e-07, 0, 7, 0, 6.5, 0, -7, 0, -3.0598e-07, 0, 0, 0)
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask = 7
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.75, 0)
+shape = SubResource("BoxShape3D_gate_col")
+
+[node name="DustParticles" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+emitting = false
+amount = 24
+one_shot = true
+explosiveness = 0.8
+process_material = SubResource("ParticleProcessMaterial_dust")
+draw_pass_1 = SubResource("BoxMesh_dust")

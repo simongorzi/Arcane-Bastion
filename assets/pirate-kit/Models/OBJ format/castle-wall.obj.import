@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://v4pler742koo"
+path="res://.godot/imported/castle-wall.obj-d89615cd3edbf13fc5d47715ffee04db.mesh"
+
+[deps]
+
+files=["res://.godot/imported/castle-wall.obj-d89615cd3edbf13fc5d47715ffee04db.mesh"]
+
+source_file="res://assets/pirate-kit/Models/OBJ format/castle-wall.obj"
+dest_files=["res://.godot/imported/castle-wall.obj-d89615cd3edbf13fc5d47715ffee04db.mesh", "res://.godot/imported/castle-wall.obj-d89615cd3edbf13fc5d47715ffee04db.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

@@ -1,0 +1,513 @@
+[gd_scene load_steps=10 format=3 uid="uid://hud001ui"]
+
+[ext_resource type="Script" path="res://scripts/hud.gd" id="1_hud"]
+[ext_resource type="PackedScene" path="res://scenes/upgrade_menu.tscn" id="2_upgrade_menu"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_bg"]
+bg_color = Color(0.08, 0.1, 0.15, 0.8)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2, 0.35, 0.5, 0.8)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hp_fill"]
+bg_color = Color(0.18, 0.85, 0.44, 1)
+corner_radius_top_left = 6
+corner_radius_top_right = 6
+corner_radius_bottom_right = 6
+corner_radius_bottom_left = 6
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_modal"]
+bg_color = Color(0.06, 0.08, 0.13, 0.92)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.25, 0.55, 0.85, 0.9)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+shadow_color = Color(0, 0, 0, 0.6)
+shadow_size = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_gameover"]
+bg_color = Color(0.12, 0.04, 0.05, 0.94)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.9, 0.25, 0.25, 0.9)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+shadow_color = Color(0.8, 0.1, 0.1, 0.2)
+shadow_size = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_banner"]
+bg_color = Color(0.06, 0.08, 0.14, 0.92)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(0.95, 0.75, 0.25, 0.95)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0.9, 0.7, 0.2, 0.35)
+shadow_size = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
+bg_color = Color(0.15, 0.22, 0.32, 0.9)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.35, 0.55, 0.8, 0.7)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_hover"]
+bg_color = Color(0.22, 0.35, 0.52, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5, 0.75, 1, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_pressed"]
+bg_color = Color(0.1, 0.16, 0.24, 1)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.2, 0.4, 0.7, 1)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="HUD" type="CanvasLayer" groups=["hud"]]
+process_mode = 3
+script = ExtResource("1_hud")
+
+[node name="Control" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Crosshair" type="CenterContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -10.0
+offset_top = -10.0
+offset_right = 10.0
+offset_bottom = 10.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Dot" type="ColorRect" parent="Control/Crosshair"]
+custom_minimum_size = Vector2(4, 4)
+layout_mode = 2
+mouse_filter = 2
+color = Color(1, 1, 1, 0.85)
+
+[node name="TopBar" type="HBoxContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 10
+anchor_right = 1.0
+offset_left = 24.0
+offset_top = 20.0
+offset_right = -24.0
+offset_bottom = 60.0
+grow_horizontal = 2
+alignment = 1
+
+[node name="WavePanel" type="PanelContainer" parent="Control/TopBar"]
+custom_minimum_size = Vector2(140, 40)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
+
+[node name="WaveLabel" type="Label" parent="Control/TopBar/WavePanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_font_sizes/font_size = 18
+text = "Wave: 1"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VSeparator0" type="VSeparator" parent="Control/TopBar"]
+custom_minimum_size = Vector2(14, 0)
+layout_mode = 2
+
+[node name="EnemyPanel" type="PanelContainer" parent="Control/TopBar"]
+custom_minimum_size = Vector2(150, 40)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
+
+[node name="EnemyLabel" type="Label" parent="Control/TopBar/EnemyPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.95, 0.4, 0.4, 1)
+theme_override_font_sizes/font_size = 18
+text = "Enemies: 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VSeparator1" type="VSeparator" parent="Control/TopBar"]
+custom_minimum_size = Vector2(14, 0)
+layout_mode = 2
+
+[node name="ScorePanel" type="PanelContainer" parent="Control/TopBar"]
+custom_minimum_size = Vector2(150, 40)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
+
+[node name="ScoreLabel" type="Label" parent="Control/TopBar/ScorePanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Score: 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="VSeparator2" type="VSeparator" parent="Control/TopBar"]
+custom_minimum_size = Vector2(14, 0)
+layout_mode = 2
+
+[node name="KillPanel" type="PanelContainer" parent="Control/TopBar"]
+custom_minimum_size = Vector2(170, 40)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_bg")
+
+[node name="KillCountLabel" type="Label" parent="Control/TopBar/KillPanel"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 18
+text = "Kills: 0"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="MarginContainer" type="MarginContainer" parent="Control"]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_top = -85.0
+offset_right = 260.0
+grow_vertical = 0
+theme_override_constants/margin_left = 24
+theme_override_constants/margin_bottom = 24
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/MarginContainer"]
+layout_mode = 2
+
+[node name="HealthLabel" type="Label" parent="Control/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+text = "HP: 100 / 100"
+
+[node name="HealthBar" type="ProgressBar" parent="Control/MarginContainer/VBoxContainer"]
+custom_minimum_size = Vector2(220, 18)
+layout_mode = 2
+theme_override_styles/fill = SubResource("StyleBoxFlat_hp_fill")
+value = 100.0
+show_percentage = false
+
+[node name="PausePanel" type="Panel" parent="Control"]
+visible = false
+custom_minimum_size = Vector2(360, 340)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -180.0
+offset_top = -170.0
+offset_right = 180.0
+offset_bottom = 170.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_modal")
+
+[node name="VBox" type="VBoxContainer" parent="Control/PausePanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="PauseTitle" type="Label" parent="Control/PausePanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 28
+text = "GAME PAUSED"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="Control/PausePanel/VBox"]
+layout_mode = 2
+
+[node name="ResumeBtn" type="Button" parent="Control/PausePanel/VBox"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+text = "Resume Game"
+
+[node name="ResetBtn" type="Button" parent="Control/PausePanel/VBox"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+text = "Restart (Reset)"
+
+[node name="SettingsBtn" type="Button" parent="Control/PausePanel/VBox"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+text = "Settings"
+
+[node name="QuitBtn" type="Button" parent="Control/PausePanel/VBox"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+text = "Quit to Desktop"
+
+[node name="SettingsPanel" type="Panel" parent="Control"]
+visible = false
+custom_minimum_size = Vector2(380, 360)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -190.0
+offset_top = -180.0
+offset_right = 190.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_modal")
+
+[node name="VBox" type="VBoxContainer" parent="Control/SettingsPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 20.0
+offset_right = -24.0
+offset_bottom = -20.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 10
+
+[node name="SettingsTitle" type="Label" parent="Control/SettingsPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.8, 1, 1)
+theme_override_font_sizes/font_size = 24
+text = "SETTINGS"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="Control/SettingsPanel/VBox"]
+layout_mode = 2
+
+[node name="SensLabel" type="Label" parent="Control/SettingsPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Mouse Sensitivity:"
+
+[node name="SensSlider" type="HSlider" parent="Control/SettingsPanel/VBox"]
+layout_mode = 2
+min_value = 0.0005
+max_value = 0.005
+step = 0.0002
+value = 0.002
+
+[node name="FullscreenCheck" type="CheckBox" parent="Control/SettingsPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Fullscreen Mode"
+
+[node name="VolumeLabel" type="Label" parent="Control/SettingsPanel/VBox"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 14
+text = "Master Volume:"
+
+[node name="VolumeSlider" type="HSlider" parent="Control/SettingsPanel/VBox"]
+layout_mode = 2
+min_value = 0.0
+max_value = 100.0
+step = 1.0
+value = 80.0
+
+[node name="Spacer" type="Control" parent="Control/SettingsPanel/VBox"]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="BackFromSettingsBtn" type="Button" parent="Control/SettingsPanel/VBox"]
+custom_minimum_size = Vector2(0, 40)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+text = "Back to Pause"
+
+[node name="GameOverPanel" type="Panel" parent="Control"]
+visible = false
+custom_minimum_size = Vector2(400, 320)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -200.0
+offset_top = -160.0
+offset_right = 200.0
+offset_bottom = 160.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_gameover")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="Control/GameOverPanel"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 24.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = -24.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="Title" type="Label" parent="Control/GameOverPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.25, 0.25, 1)
+theme_override_font_sizes/font_size = 32
+text = "DEFEAT"
+horizontal_alignment = 1
+
+[node name="Description" type="Label" parent="Control/GameOverPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_font_sizes/font_size = 15
+text = "The fortress has fallen to the undead..."
+horizontal_alignment = 1
+
+[node name="FinalScoreLabel" type="Label" parent="Control/GameOverPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_font_sizes/font_size = 17
+text = "Final Score: 0"
+horizontal_alignment = 1
+
+[node name="FinalKillsLabel" type="Label" parent="Control/GameOverPanel/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.85, 1, 1)
+theme_override_font_sizes/font_size = 17
+text = "Total Kills: 0"
+horizontal_alignment = 1
+
+[node name="GameOverRestartButton" type="Button" parent="Control/GameOverPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+text = "Play Again (Restart)"
+
+[node name="GameOverQuitButton" type="Button" parent="Control/GameOverPanel/VBoxContainer"]
+custom_minimum_size = Vector2(0, 42)
+layout_mode = 2
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+text = "Quit Game"
+
+[node name="BannerPanel" type="PanelContainer" parent="Control"]
+visible = false
+custom_minimum_size = Vector2(460, 110)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -230.0
+offset_top = -200.0
+offset_right = 230.0
+offset_bottom = -90.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_banner")
+
+[node name="VBox" type="VBoxContainer" parent="Control/BannerPanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+alignment = 1
+
+[node name="BannerTitle" type="Label" parent="Control/BannerPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.88, 0.35, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.95)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 28
+text = "✦ WAVE 1 ✦"
+horizontal_alignment = 1
+
+[node name="BannerSubtitle" type="Label" parent="Control/BannerPanel/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.92, 1, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_font_sizes/font_size = 16
+text = "The undead horde approaches!"
+horizontal_alignment = 1
+
+[node name="UpgradeMenu" parent="Control" instance=ExtResource("2_upgrade_menu")]
+layout_mode = 1

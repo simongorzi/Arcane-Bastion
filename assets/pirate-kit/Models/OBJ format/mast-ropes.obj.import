@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://b76itih1woa2d"
+path="res://.godot/imported/mast-ropes.obj-657654bc326fc897a62326f1bc758e07.mesh"
+
+[deps]
+
+files=["res://.godot/imported/mast-ropes.obj-657654bc326fc897a62326f1bc758e07.mesh"]
+
+source_file="res://assets/pirate-kit/Models/OBJ format/mast-ropes.obj"
+dest_files=["res://.godot/imported/mast-ropes.obj-657654bc326fc897a62326f1bc758e07.mesh", "res://.godot/imported/mast-ropes.obj-657654bc326fc897a62326f1bc758e07.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

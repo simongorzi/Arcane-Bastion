@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://qly3b4txw5q0"
+path="res://.godot/imported/tower-square-top-color.obj-8fbef5c25959040b6a2f3b6826091a14.mesh"
+
+[deps]
+
+files=["res://.godot/imported/tower-square-top-color.obj-8fbef5c25959040b6a2f3b6826091a14.mesh"]
+
+source_file="res://assets/castle/Models/OBJ format/tower-square-top-color.obj"
+dest_files=["res://.godot/imported/tower-square-top-color.obj-8fbef5c25959040b6a2f3b6826091a14.mesh", "res://.godot/imported/tower-square-top-color.obj-8fbef5c25959040b6a2f3b6826091a14.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

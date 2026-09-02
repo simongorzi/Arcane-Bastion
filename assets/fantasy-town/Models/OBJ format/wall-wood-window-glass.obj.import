@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://dypu3w2c7h8rg"
+path="res://.godot/imported/wall-wood-window-glass.obj-4c8c27af6ec1a5bc0c9c12cc8e7167ce.mesh"
+
+[deps]
+
+files=["res://.godot/imported/wall-wood-window-glass.obj-4c8c27af6ec1a5bc0c9c12cc8e7167ce.mesh"]
+
+source_file="res://assets/fantasy-town/Models/OBJ format/wall-wood-window-glass.obj"
+dest_files=["res://.godot/imported/wall-wood-window-glass.obj-4c8c27af6ec1a5bc0c9c12cc8e7167ce.mesh", "res://.godot/imported/wall-wood-window-glass.obj-4c8c27af6ec1a5bc0c9c12cc8e7167ce.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://dkjet7uqqw25n"
+path="res://.godot/imported/planks-half.obj-5067bb592fb5ad5cbf4771c0ec51fe02.mesh"
+
+[deps]
+
+files=["res://.godot/imported/planks-half.obj-5067bb592fb5ad5cbf4771c0ec51fe02.mesh"]
+
+source_file="res://assets/fantasy-town/Models/OBJ format/planks-half.obj"
+dest_files=["res://.godot/imported/planks-half.obj-5067bb592fb5ad5cbf4771c0ec51fe02.mesh", "res://.godot/imported/planks-half.obj-5067bb592fb5ad5cbf4771c0ec51fe02.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

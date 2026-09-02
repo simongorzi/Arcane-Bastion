@@ -1,0 +1,23 @@
+# Godot 4.x engine cache and imported assets
+.godot/
+.import/
+
+# Imported translations
+*.translation
+
+# Mono / C# specifics (if ever enabled)
+.mono/
+data_*/
+mono_crash.*.json
+
+# Operating System files
+.DS_Store
+Thumbs.db
+desktop.ini
+*.tmp
+*.bak
+*.log
+
+# Editor configuration
+.vscode/*
+!.vscode/launch.json

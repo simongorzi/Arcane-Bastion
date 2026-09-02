@@ -1,0 +1,757 @@
+[gd_scene load_steps=37 format=3 uid="uid://main001world"]
+
+[ext_resource type="PackedScene" path="res://scenes/player.tscn" id="1_player"]
+[ext_resource type="PackedScene" path="res://scenes/spawner.tscn" id="2_spawner"]
+[ext_resource type="PackedScene" path="res://scenes/hud.tscn" id="3_hud"]
+[ext_resource type="PackedScene" path="res://assets/castle/Models/GLB format/wall.glb" id="4_wall"]
+[ext_resource type="PackedScene" path="res://assets/castle/Models/GLB format/tower-square.glb" id="5_tower"]
+[ext_resource type="PackedScene" path="res://assets/castle/Models/GLB format/tower-square-roof.glb" id="6_roof"]
+[ext_resource type="PackedScene" path="res://assets/castle/Models/GLB format/flag-banner-long.glb" id="7_banner"]
+[ext_resource type="PackedScene" path="res://assets/castle/Models/GLB format/tree-large.glb" id="8_tree_large"]
+[ext_resource type="PackedScene" path="res://assets/castle/Models/GLB format/tree-small.glb" id="9_tree_small"]
+[ext_resource type="PackedScene" path="res://assets/castle/Models/GLB format/rocks-large.glb" id="10_rocks_large"]
+[ext_resource type="PackedScene" path="res://assets/castle/Models/GLB format/rocks-small.glb" id="11_rocks_small"]
+[ext_resource type="PackedScene" path="res://assets/pirate-kit/Models/GLB format/barrel.glb" id="12_barrel"]
+[ext_resource type="PackedScene" path="res://assets/pirate-kit/Models/GLB format/crate.glb" id="13_crate"]
+[ext_resource type="PackedScene" path="res://assets/pirate-kit/Models/GLB format/chest.glb" id="14_chest"]
+[ext_resource type="PackedScene" path="res://assets/castle/Models/GLB format/siege-catapult.glb" id="15_catapult"]
+[ext_resource type="PackedScene" path="res://assets/castle/Models/GLB format/wall-narrow-wood-fence.glb" id="16_fence"]
+[ext_resource type="PackedScene" path="res://assets/castle/Models/GLB format/tree-log.glb" id="17_tree_log"]
+[ext_resource type="PackedScene" path="res://assets/fantasy-town/Models/GLB format/stairs-wide-stone.glb" id="18_stairs"]
+[ext_resource type="PackedScene" path="res://assets/fantasy-town/Models/GLB format/pillar-stone.glb" id="19_pillar"]
+[ext_resource type="Shader" path="res://shaders/ground.gdshader" id="20_ground_shader"]
+[ext_resource type="PackedScene" path="res://assets/pirate-kit/Models/GLB format/grass-patch.glb" id="21_grass_patch"]
+[ext_resource type="Script" path="res://scripts/wave_manager.gd" id="22_wave_mgr"]
+[ext_resource type="PackedScene" path="res://scenes/zone_gate.tscn" id="23_zone_gate"]
+[ext_resource type="PackedScene" path="res://scenes/healing_well.tscn" id="24_healing_well"]
+[ext_resource type="PackedScene" path="res://assets/fantasy-town/Models/GLB format/wall-arch.glb" id="25_wall_arch"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_twilight"]
+sky_top_color = Color(0.12, 0.18, 0.35, 1)
+sky_horizon_color = Color(0.38, 0.3, 0.48, 1)
+ground_bottom_color = Color(0.08, 0.1, 0.14, 1)
+ground_horizon_color = Color(0.2, 0.18, 0.28, 1)
+sun_angle_max = 25.0
+
+[sub_resource type="Sky" id="Sky_twilight"]
+sky_material = SubResource("ProceduralSkyMaterial_twilight")
+
+[sub_resource type="Environment" id="Environment_twilight"]
+background_mode = 2
+sky = SubResource("Sky_twilight")
+ambient_light_source = 3
+ambient_light_color = Color(0.24, 0.28, 0.4, 1)
+ambient_light_sky_contribution = 0.45
+tonemap_mode = 3
+tonemap_exposure = 1.05
+ssao_enabled = true
+ssao_radius = 2.0
+ssao_intensity = 3.0
+ssao_power = 1.6
+glow_enabled = true
+glow_intensity = 0.85
+glow_bloom = 0.3
+glow_blend_mode = 0
+fog_enabled = true
+fog_light_color = Color(0.1, 0.12, 0.2, 1)
+fog_light_energy = 0.95
+fog_sun_scatter = 0.25
+fog_density = 0.02
+fog_aerial_perspective = 0.7
+fog_sky_affect = 0.95
+fog_depth_begin = 16.0
+fog_depth_end = 48.0
+volumetric_fog_enabled = true
+volumetric_fog_density = 0.035
+volumetric_fog_albedo = Color(0.12, 0.14, 0.22, 1)
+volumetric_fog_emission = Color(0.03, 0.04, 0.08, 1)
+volumetric_fog_length = 48.0
+adjustment_enabled = true
+adjustment_contrast = 1.15
+adjustment_saturation = 1.2
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
+size = Vector3(120, 1, 120)
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ground"]
+render_priority = 0
+shader = ExtResource("20_ground_shader")
+
+[sub_resource type="BoxMesh" id="BoxMesh_floor"]
+material = SubResource("ShaderMaterial_ground")
+size = Vector3(120, 1, 120)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_seg"]
+size = Vector3(9, 6, 2.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_wall_seg_side"]
+size = Vector3(2.5, 6, 9)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_sanctum_side"]
+size = Vector3(2.5, 6, 16)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_sanctum_back"]
+size = Vector3(16, 6, 2.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tower"]
+size = Vector3(5, 8, 5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_prop_barrel_stack"]
+size = Vector3(3, 2, 2.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_prop_catapult"]
+size = Vector3(3.5, 2.5, 3.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_prop_chest"]
+size = Vector3(1.5, 1, 1.2)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_prop_fence"]
+size = Vector3(2.5, 1.5, 0.5)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_prop_log"]
+size = Vector3(2.8, 0.8, 0.8)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_tower_stone"]
+albedo_color = Color(0.28, 0.3, 0.33, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_tower_platform"]
+material = SubResource("StandardMaterial3D_tower_stone")
+size = Vector3(8, 2.4, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tower_plat"]
+size = Vector3(8, 2.4, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tower_ramp"]
+size = Vector3(3.4, 0.25, 4.4)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tower_parapet_ns"]
+size = Vector3(8, 0.75, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tower_parapet_ew"]
+size = Vector3(0.6, 0.75, 8)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tower_parapet_short"]
+size = Vector3(2.2, 0.75, 0.6)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_tower_pillar"]
+size = Vector3(1.1, 1.05, 1.1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_parapet"]
+albedo_color = Color(0.35, 0.37, 0.4, 1)
+roughness = 0.85
+
+[sub_resource type="BoxMesh" id="BoxMesh_parapet_ns"]
+material = SubResource("StandardMaterial3D_parapet")
+size = Vector3(8, 0.75, 0.6)
+
+[sub_resource type="BoxMesh" id="BoxMesh_parapet_ew"]
+material = SubResource("StandardMaterial3D_parapet")
+size = Vector3(0.6, 0.75, 8)
+
+[sub_resource type="BoxMesh" id="BoxMesh_parapet_short"]
+material = SubResource("StandardMaterial3D_parapet")
+size = Vector3(2.2, 0.75, 0.6)
+
+[node name="Main" type="Node3D"]
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="."]
+environment = SubResource("Environment_twilight")
+
+[node name="MoonLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 0, 20, 0)
+light_color = Color(0.75, 0.84, 1, 1)
+light_energy = 0.95
+light_volumetric_fog_energy = 1.2
+shadow_enabled = true
+shadow_bias = 0.03
+shadow_blur = 1.4
+directional_shadow_max_distance = 65.0
+
+[node name="Environment" type="Node3D" parent="."]
+
+[node name="Ground" type="StaticBody3D" parent="Environment"]
+collision_layer = 1
+collision_mask = 7
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Environment/Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+shape = SubResource("BoxShape3D_floor")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="Environment/Ground"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
+mesh = SubResource("BoxMesh_floor")
+
+[node name="CastleCollisions" type="StaticBody3D" parent="Environment"]
+collision_layer = 1
+collision_mask = 7
+
+[node name="Col_North_Left" type="CollisionShape3D" parent="Environment/CastleCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 2.5, -14)
+shape = SubResource("BoxShape3D_wall_seg")
+
+[node name="Col_North_Right" type="CollisionShape3D" parent="Environment/CastleCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 2.5, -14)
+shape = SubResource("BoxShape3D_wall_seg")
+
+[node name="Col_South_Left" type="CollisionShape3D" parent="Environment/CastleCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 2.5, 14)
+shape = SubResource("BoxShape3D_wall_seg")
+
+[node name="Col_South_Right" type="CollisionShape3D" parent="Environment/CastleCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 2.5, 14)
+shape = SubResource("BoxShape3D_wall_seg")
+
+[node name="Col_East_Top" type="CollisionShape3D" parent="Environment/CastleCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 2.5, -7.5)
+shape = SubResource("BoxShape3D_wall_seg_side")
+
+[node name="Col_East_Bottom" type="CollisionShape3D" parent="Environment/CastleCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 2.5, 7.5)
+shape = SubResource("BoxShape3D_wall_seg_side")
+
+[node name="Col_West_Top" type="CollisionShape3D" parent="Environment/CastleCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 2.5, -7.5)
+shape = SubResource("BoxShape3D_wall_seg_side")
+
+[node name="Col_West_Bottom" type="CollisionShape3D" parent="Environment/CastleCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 2.5, 7.5)
+shape = SubResource("BoxShape3D_wall_seg_side")
+
+[node name="Col_Tower_NW" type="CollisionShape3D" parent="Environment/CastleCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 4, -14)
+shape = SubResource("BoxShape3D_tower")
+
+[node name="Col_Tower_NE" type="CollisionShape3D" parent="Environment/CastleCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 4, -14)
+shape = SubResource("BoxShape3D_tower")
+
+[node name="Col_Tower_SW" type="CollisionShape3D" parent="Environment/CastleCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 4, 14)
+shape = SubResource("BoxShape3D_tower")
+
+[node name="Col_Tower_SE" type="CollisionShape3D" parent="Environment/CastleCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 4, 14)
+shape = SubResource("BoxShape3D_tower")
+
+[node name="Col_Sanctum_W" type="CollisionShape3D" parent="Environment/CastleCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -7.5, 3, -22)
+shape = SubResource("BoxShape3D_sanctum_side")
+
+[node name="Col_Sanctum_E" type="CollisionShape3D" parent="Environment/CastleCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 7.5, 3, -22)
+shape = SubResource("BoxShape3D_sanctum_side")
+
+[node name="Col_Sanctum_N" type="CollisionShape3D" parent="Environment/CastleCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3, -30)
+shape = SubResource("BoxShape3D_sanctum_back")
+
+[node name="PropsCollisions" type="StaticBody3D" parent="Environment"]
+collision_layer = 1
+collision_mask = 7
+
+[node name="Col_Barrels_1" type="CollisionShape3D" parent="Environment/PropsCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 1, 11)
+shape = SubResource("BoxShape3D_prop_barrel_stack")
+
+[node name="Col_Barrels_2" type="CollisionShape3D" parent="Environment/PropsCollisions"]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 11, 1, -11)
+shape = SubResource("BoxShape3D_prop_barrel_stack")
+
+[node name="Col_Catapult" type="CollisionShape3D" parent="Environment/PropsCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 10.5, 1.25, 10.5)
+shape = SubResource("BoxShape3D_prop_catapult")
+
+[node name="Col_Chest" type="CollisionShape3D" parent="Environment/PropsCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.5, 0.5, -11.5)
+shape = SubResource("BoxShape3D_prop_chest")
+
+[node name="Col_Fence_Left" type="CollisionShape3D" parent="Environment/PropsCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 0.75, 4)
+shape = SubResource("BoxShape3D_prop_fence")
+
+[node name="Col_Fence_Right" type="CollisionShape3D" parent="Environment/PropsCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12.5, 0.75, 4)
+shape = SubResource("BoxShape3D_prop_fence")
+
+[node name="Col_Log_1" type="CollisionShape3D" parent="Environment/PropsCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.5, 0.4, -4)
+shape = SubResource("BoxShape3D_prop_log")
+
+[node name="Col_Log_2" type="CollisionShape3D" parent="Environment/PropsCollisions"]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 12.5, 0.4, -4)
+shape = SubResource("BoxShape3D_prop_log")
+
+[node name="CentralTower" type="Node3D" parent="Environment"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
+
+[node name="TowerCollisions" type="StaticBody3D" parent="Environment/CentralTower"]
+collision_layer = 1
+collision_mask = 7
+
+[node name="Col_Platform" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+shape = SubResource("BoxShape3D_tower_plat")
+
+[node name="Col_StairsRamp" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
+transform = Transform3D(1, 0, 0, 0, 0.8290376, -0.5591929, 0, 0.5591929, 0.8290376, 0, 1.2, 5.95)
+shape = SubResource("BoxShape3D_tower_ramp")
+
+[node name="Col_Parapet_N" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.775, -4)
+shape = SubResource("BoxShape3D_tower_parapet_ns")
+
+[node name="Col_Parapet_E" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.775, 0)
+shape = SubResource("BoxShape3D_tower_parapet_ew")
+
+[node name="Col_Parapet_W" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2.775, 0)
+shape = SubResource("BoxShape3D_tower_parapet_ew")
+
+[node name="Col_Parapet_S_Left" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9, 2.775, 4)
+shape = SubResource("BoxShape3D_tower_parapet_short")
+
+[node name="Col_Parapet_S_Right" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9, 2.775, 4)
+shape = SubResource("BoxShape3D_tower_parapet_short")
+
+[node name="Col_Pillar_NW" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8, 2.925, -3.8)
+shape = SubResource("BoxShape3D_tower_pillar")
+
+[node name="Col_Pillar_NE" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8, 2.925, -3.8)
+shape = SubResource("BoxShape3D_tower_pillar")
+
+[node name="Col_Pillar_SW" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8, 2.925, 3.8)
+shape = SubResource("BoxShape3D_tower_pillar")
+
+[node name="Col_Pillar_SE" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8, 2.925, 3.8)
+shape = SubResource("BoxShape3D_tower_pillar")
+
+[node name="PlatformMesh" type="MeshInstance3D" parent="Environment/CentralTower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+mesh = SubResource("BoxMesh_tower_platform")
+
+[node name="StairsVisual" parent="Environment/CentralTower" instance=ExtResource("18_stairs")]
+transform = Transform3D(-1.66e-07, 0, 3.2, 0, 2.4, 0, -3.8, 0, -1.39e-07, 0, 0, 5.9)
+
+[node name="Pillar_NW" parent="Environment/CentralTower" instance=ExtResource("19_pillar")]
+transform = Transform3D(1.1, 0, 0, 0, 1.05, 0, 0, 0, 1.1, -3.8, 2.4, -3.8)
+
+[node name="Pillar_NE" parent="Environment/CentralTower" instance=ExtResource("19_pillar")]
+transform = Transform3D(1.1, 0, 0, 0, 1.05, 0, 0, 0, 1.1, 3.8, 2.4, -3.8)
+
+[node name="Pillar_SW" parent="Environment/CentralTower" instance=ExtResource("19_pillar")]
+transform = Transform3D(1.1, 0, 0, 0, 1.05, 0, 0, 0, 1.1, -3.8, 2.4, 3.8)
+
+[node name="Pillar_SE" parent="Environment/CentralTower" instance=ExtResource("19_pillar")]
+transform = Transform3D(1.1, 0, 0, 0, 1.05, 0, 0, 0, 1.1, 3.8, 2.4, 3.8)
+
+[node name="Mesh_Parapet_N" type="MeshInstance3D" parent="Environment/CentralTower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.775, -4)
+mesh = SubResource("BoxMesh_parapet_ns")
+
+[node name="Mesh_Parapet_E" type="MeshInstance3D" parent="Environment/CentralTower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.775, 0)
+mesh = SubResource("BoxMesh_parapet_ew")
+
+[node name="Mesh_Parapet_W" type="MeshInstance3D" parent="Environment/CentralTower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2.775, 0)
+mesh = SubResource("BoxMesh_parapet_ew")
+
+[node name="Mesh_Parapet_S_Left" type="MeshInstance3D" parent="Environment/CentralTower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9, 2.775, 4)
+mesh = SubResource("BoxMesh_parapet_short")
+
+[node name="Mesh_Parapet_S_Right" type="MeshInstance3D" parent="Environment/CentralTower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9, 2.775, 4)
+mesh = SubResource("BoxMesh_parapet_short")
+
+[node name="TowerAltarLight" type="OmniLight3D" parent="Environment/CentralTower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.4, 0)
+light_color = Color(0.3, 0.85, 1, 1)
+light_energy = 3.5
+omni_range = 9.0
+
+[node name="TowerTorch_NW" type="OmniLight3D" parent="Environment/CentralTower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8, 3.6, -3.8)
+light_color = Color(1, 0.65, 0.25, 1)
+light_energy = 2.5
+omni_range = 6.0
+
+[node name="TowerTorch_NE" type="OmniLight3D" parent="Environment/CentralTower"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8, 3.6, -3.8)
+light_color = Color(1, 0.65, 0.25, 1)
+light_energy = 2.5
+omni_range = 6.0
+
+[node name="CastleArchitecture" type="Node3D" parent="Environment"]
+
+[node name="Tower_NW" parent="Environment/CastleArchitecture" instance=ExtResource("5_tower")]
+transform = Transform3D(3.5, 0, 0, 0, 4, 0, 0, 0, 3.5, -14, 0, -14)
+
+[node name="Roof_NW" parent="Environment/CastleArchitecture" instance=ExtResource("6_roof")]
+transform = Transform3D(3.6, 0, 0, 0, 3.6, 0, 0, 0, 3.6, -14, 5.2, -14)
+
+[node name="Banner_NW" parent="Environment/CastleArchitecture" instance=ExtResource("7_banner")]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, -14, 3, -12)
+
+[node name="Tower_NE" parent="Environment/CastleArchitecture" instance=ExtResource("5_tower")]
+transform = Transform3D(3.5, 0, 0, 0, 4, 0, 0, 0, 3.5, 14, 0, -14)
+
+[node name="Roof_NE" parent="Environment/CastleArchitecture" instance=ExtResource("6_roof")]
+transform = Transform3D(3.6, 0, 0, 0, 3.6, 0, 0, 0, 3.6, 14, 5.2, -14)
+
+[node name="Banner_NE" parent="Environment/CastleArchitecture" instance=ExtResource("7_banner")]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, 14, 3, -12)
+
+[node name="Tower_SW" parent="Environment/CastleArchitecture" instance=ExtResource("5_tower")]
+transform = Transform3D(3.5, 0, 0, 0, 4, 0, 0, 0, 3.5, -14, 0, 14)
+
+[node name="Roof_SW" parent="Environment/CastleArchitecture" instance=ExtResource("6_roof")]
+transform = Transform3D(3.6, 0, 0, 0, 3.6, 0, 0, 0, 3.6, -14, 5.2, 14)
+
+[node name="Banner_SW" parent="Environment/CastleArchitecture" instance=ExtResource("7_banner")]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, -14, 3, 16)
+
+[node name="Tower_SE" parent="Environment/CastleArchitecture" instance=ExtResource("5_tower")]
+transform = Transform3D(3.5, 0, 0, 0, 4, 0, 0, 0, 3.5, 14, 0, 14)
+
+[node name="Roof_SE" parent="Environment/CastleArchitecture" instance=ExtResource("6_roof")]
+transform = Transform3D(3.6, 0, 0, 0, 3.6, 0, 0, 0, 3.6, 14, 5.2, 14)
+
+[node name="Banner_SE" parent="Environment/CastleArchitecture" instance=ExtResource("7_banner")]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, 14, 3, 16)
+
+[node name="Wall_NL1" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -10.5, 0, -14)
+
+[node name="Wall_NL2" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -7.5, 0, -14)
+
+[node name="Wall_NL3" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -4.5, 0, -14)
+
+[node name="Wall_NR1" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 4.5, 0, -14)
+
+[node name="Wall_NR2" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 7.5, 0, -14)
+
+[node name="Wall_NR3" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 10.5, 0, -14)
+
+[node name="Wall_SL1" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(-3, 0, -2.62268e-07, 0, 3, 0, 2.62268e-07, 0, -3, -10.5, 0, 14)
+
+[node name="Wall_SL2" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(-3, 0, -2.62268e-07, 0, 3, 0, 2.62268e-07, 0, -3, -7.5, 0, 14)
+
+[node name="Wall_SL3" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(-3, 0, -2.62268e-07, 0, 3, 0, 2.62268e-07, 0, -3, -4.5, 0, 14)
+
+[node name="Wall_SR1" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(-3, 0, -2.62268e-07, 0, 3, 0, 2.62268e-07, 0, -3, 4.5, 0, 14)
+
+[node name="Wall_SR2" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(-3, 0, -2.62268e-07, 0, 3, 0, 2.62268e-07, 0, -3, 7.5, 0, 14)
+
+[node name="Wall_SR3" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(-3, 0, -2.62268e-07, 0, 3, 0, 2.62268e-07, 0, -3, 10.5, 0, 14)
+
+[node name="Wall_EL1" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(-1.31134e-07, 0, 3, 0, 3, 0, -3, 0, -1.31134e-07, 14, 0, -10.5)
+
+[node name="Wall_EL2" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(-1.31134e-07, 0, 3, 0, 3, 0, -3, 0, -1.31134e-07, 14, 0, -7.5)
+
+[node name="Wall_EL3" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(-1.31134e-07, 0, 3, 0, 3, 0, -3, 0, -1.31134e-07, 14, 0, -4.5)
+
+[node name="Wall_ER1" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(-1.31134e-07, 0, 3, 0, 3, 0, -3, 0, -1.31134e-07, 14, 0, 4.5)
+
+[node name="Wall_ER2" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(-1.31134e-07, 0, 3, 0, 3, 0, -3, 0, -1.31134e-07, 14, 0, 7.5)
+
+[node name="Wall_ER3" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(-1.31134e-07, 0, 3, 0, 3, 0, -3, 0, -1.31134e-07, 14, 0, 10.5)
+
+[node name="Wall_WL1" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(-1.31134e-07, 0, -3, 0, 3, 0, 3, 0, -1.31134e-07, -14, 0, -10.5)
+
+[node name="Wall_WL2" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(-1.31134e-07, 0, -3, 0, 3, 0, 3, 0, -1.31134e-07, -14, 0, -7.5)
+
+[node name="Wall_WL3" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(-1.31134e-07, 0, -3, 0, 3, 0, 3, 0, -1.31134e-07, -14, 0, -4.5)
+
+[node name="Wall_WR1" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(-1.31134e-07, 0, -3, 0, 3, 0, 3, 0, -1.31134e-07, -14, 0, 4.5)
+
+[node name="Wall_WR2" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(-1.31134e-07, 0, -3, 0, 3, 0, 3, 0, -1.31134e-07, -14, 0, 7.5)
+
+[node name="Wall_WR3" parent="Environment/CastleArchitecture" instance=ExtResource("4_wall")]
+transform = Transform3D(-1.31134e-07, 0, -3, 0, 3, 0, 3, 0, -1.31134e-07, -14, 0, 10.5)
+
+[node name="GateLight_South" type="OmniLight3D" parent="Environment/CastleArchitecture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, 14)
+light_color = Color(1, 0.65, 0.25, 1)
+light_energy = 3.2
+omni_range = 10.0
+
+[node name="GateLight_North" type="OmniLight3D" parent="Environment/CastleArchitecture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4, -14)
+light_color = Color(1, 0.65, 0.25, 1)
+light_energy = 3.2
+omni_range = 10.0
+
+[node name="GateLight_East" type="OmniLight3D" parent="Environment/CastleArchitecture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 14, 4, 0)
+light_color = Color(1, 0.65, 0.25, 1)
+light_energy = 3.2
+omni_range = 10.0
+
+[node name="GateLight_West" type="OmniLight3D" parent="Environment/CastleArchitecture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14, 4, 0)
+light_color = Color(1, 0.65, 0.25, 1)
+light_energy = 3.2
+omni_range = 10.0
+
+[node name="TowerLight_NW" type="OmniLight3D" parent="Environment/CastleArchitecture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 3.5, -12)
+light_color = Color(1, 0.6, 0.22, 1)
+light_energy = 2.8
+omni_range = 8.5
+
+[node name="TowerLight_NE" type="OmniLight3D" parent="Environment/CastleArchitecture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 3.5, -12)
+light_color = Color(1, 0.6, 0.22, 1)
+light_energy = 2.8
+omni_range = 8.5
+
+[node name="TowerLight_SW" type="OmniLight3D" parent="Environment/CastleArchitecture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12, 3.5, 12)
+light_color = Color(1, 0.6, 0.22, 1)
+light_energy = 2.8
+omni_range = 8.5
+
+[node name="TowerLight_SE" type="OmniLight3D" parent="Environment/CastleArchitecture"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 12, 3.5, 12)
+light_color = Color(1, 0.6, 0.22, 1)
+light_energy = 2.8
+omni_range = 8.5
+
+[node name="ZoneGate" parent="Environment/CastleArchitecture" instance=ExtResource("23_zone_gate")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -14)
+
+[node name="Zone2_Sanctuary" type="Node3D" parent="Environment/CastleArchitecture"]
+
+[node name="HealingWell" parent="Environment/CastleArchitecture/Zone2_Sanctuary" instance=ExtResource("24_healing_well")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -22)
+
+[node name="SanctumWall_W1" parent="Environment/CastleArchitecture/Zone2_Sanctuary" instance=ExtResource("4_wall")]
+transform = Transform3D(-1.31134e-07, 0, -3, 0, 3, 0, 3, 0, -1.31134e-07, -7.5, 0, -18)
+
+[node name="SanctumWall_W2" parent="Environment/CastleArchitecture/Zone2_Sanctuary" instance=ExtResource("4_wall")]
+transform = Transform3D(-1.31134e-07, 0, -3, 0, 3, 0, 3, 0, -1.31134e-07, -7.5, 0, -26)
+
+[node name="SanctumWall_E1" parent="Environment/CastleArchitecture/Zone2_Sanctuary" instance=ExtResource("4_wall")]
+transform = Transform3D(-1.31134e-07, 0, 3, 0, 3, 0, -3, 0, -1.31134e-07, 7.5, 0, -18)
+
+[node name="SanctumWall_E2" parent="Environment/CastleArchitecture/Zone2_Sanctuary" instance=ExtResource("4_wall")]
+transform = Transform3D(-1.31134e-07, 0, 3, 0, 3, 0, -3, 0, -1.31134e-07, 7.5, 0, -26)
+
+[node name="SanctumWall_Back1" parent="Environment/CastleArchitecture/Zone2_Sanctuary" instance=ExtResource("4_wall")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -4.5, 0, -30)
+
+[node name="SanctumWall_Back2" parent="Environment/CastleArchitecture/Zone2_Sanctuary" instance=ExtResource("4_wall")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 4.5, 0, -30)
+
+[node name="SanctumPillar_1" parent="Environment/CastleArchitecture/Zone2_Sanctuary" instance=ExtResource("19_pillar")]
+transform = Transform3D(2.4, 0, 0, 0, 2.4, 0, 0, 0, 2.4, -4, 0, -18)
+
+[node name="SanctumPillar_2" parent="Environment/CastleArchitecture/Zone2_Sanctuary" instance=ExtResource("19_pillar")]
+transform = Transform3D(2.4, 0, 0, 0, 2.4, 0, 0, 0, 2.4, 4, 0, -18)
+
+[node name="SanctumPillar_3" parent="Environment/CastleArchitecture/Zone2_Sanctuary" instance=ExtResource("19_pillar")]
+transform = Transform3D(2.4, 0, 0, 0, 2.4, 0, 0, 0, 2.4, -4, 0, -26)
+
+[node name="SanctumPillar_4" parent="Environment/CastleArchitecture/Zone2_Sanctuary" instance=ExtResource("19_pillar")]
+transform = Transform3D(2.4, 0, 0, 0, 2.4, 0, 0, 0, 2.4, 4, 0, -26)
+
+[node name="SanctumLight" type="OmniLight3D" parent="Environment/CastleArchitecture/Zone2_Sanctuary"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 4.5, -22)
+light_color = Color(0.4, 0.75, 1, 1)
+light_energy = 3.5
+omni_range = 14.0
+
+[node name="PropsAndDecorations" type="Node3D" parent="Environment"]
+
+[node name="Barrel_Stack_1" type="Node3D" parent="Environment/PropsAndDecorations"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11, 0, 11)
+
+[node name="Barrel1" parent="Environment/PropsAndDecorations/Barrel_Stack_1" instance=ExtResource("12_barrel")]
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 0, 0, 0)
+
+[node name="Barrel2" parent="Environment/PropsAndDecorations/Barrel_Stack_1" instance=ExtResource("12_barrel")]
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 1.2, 0, 0.3)
+
+[node name="Barrel3" parent="Environment/PropsAndDecorations/Barrel_Stack_1" instance=ExtResource("12_barrel")]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, 0.6, 1.2, 0.1)
+
+[node name="Crate1" parent="Environment/PropsAndDecorations/Barrel_Stack_1" instance=ExtResource("13_crate")]
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, -1.2, 0, 0.2)
+
+[node name="Barrel_Stack_2" type="Node3D" parent="Environment/PropsAndDecorations"]
+transform = Transform3D(0.866025, 0, 0.5, 0, 1, 0, -0.5, 0, 0.866025, 11, 0, -11)
+
+[node name="BarrelA" parent="Environment/PropsAndDecorations/Barrel_Stack_2" instance=ExtResource("12_barrel")]
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 0, 0, 0)
+
+[node name="BarrelB" parent="Environment/PropsAndDecorations/Barrel_Stack_2" instance=ExtResource("12_barrel")]
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 1.1, 0, -0.4)
+
+[node name="CrateA" parent="Environment/PropsAndDecorations/Barrel_Stack_2" instance=ExtResource("13_crate")]
+transform = Transform3D(1.7, 0, 0, 0, 1.7, 0, 0, 0, 1.7, -1.1, 0, 0)
+
+[node name="CrateB" parent="Environment/PropsAndDecorations/Barrel_Stack_2" instance=ExtResource("13_crate")]
+transform = Transform3D(1.5, 0, 0, 0, 1.5, 0, 0, 0, 1.5, -1.1, 1.2, 0)
+
+[node name="TreasureChest" parent="Environment/PropsAndDecorations" instance=ExtResource("14_chest")]
+transform = Transform3D(1.8, 0, 0, 0, 1.8, 0, 0, 0, 1.8, -11.5, 0, -11.5)
+
+[node name="Catapult" parent="Environment/PropsAndDecorations" instance=ExtResource("15_catapult")]
+transform = Transform3D(1.76777, 0, 1.76777, 0, 2.5, 0, -1.76777, 0, 1.76777, 10.5, 0, 10.5)
+
+[node name="Fence_Left" parent="Environment/PropsAndDecorations" instance=ExtResource("16_fence")]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, -12.5, 0, 4)
+
+[node name="Fence_Right" parent="Environment/PropsAndDecorations" instance=ExtResource("16_fence")]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, 12.5, 0, 4)
+
+[node name="TreeLog1" parent="Environment/PropsAndDecorations" instance=ExtResource("17_tree_log")]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, -12.5, 0, -4)
+
+[node name="TreeLog2" parent="Environment/PropsAndDecorations" instance=ExtResource("17_tree_log")]
+transform = Transform3D(1.76777, 0, 1.76777, 0, 2.5, 0, -1.76777, 0, 1.76777, 12.5, 0, -4)
+
+[node name="NatureAndProps" type="Node3D" parent="Environment"]
+
+[node name="Tree_1" parent="Environment/NatureAndProps" instance=ExtResource("8_tree_large")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, -20, 0, -20)
+
+[node name="Tree_2" parent="Environment/NatureAndProps" instance=ExtResource("8_tree_large")]
+transform = Transform3D(3.2, 0, 0, 0, 3.2, 0, 0, 0, 3.2, 20, 0, -20)
+
+[node name="Tree_3" parent="Environment/NatureAndProps" instance=ExtResource("8_tree_large")]
+transform = Transform3D(3.5, 0, 0, 0, 3.5, 0, 0, 0, 3.5, -22, 0, 20)
+
+[node name="Tree_4" parent="Environment/NatureAndProps" instance=ExtResource("8_tree_large")]
+transform = Transform3D(3, 0, 0, 0, 3, 0, 0, 0, 3, 22, 0, 22)
+
+[node name="Tree_Small1" parent="Environment/NatureAndProps" instance=ExtResource("9_tree_small")]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, -17, 0, -18)
+
+[node name="Tree_Small2" parent="Environment/NatureAndProps" instance=ExtResource("9_tree_small")]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, 17, 0, 18)
+
+[node name="Tree_Small3" parent="Environment/NatureAndProps" instance=ExtResource("9_tree_small")]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, -18, 0, 16)
+
+[node name="Rock_1" parent="Environment/NatureAndProps" instance=ExtResource("10_rocks_large")]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, -6, 0, 16)
+
+[node name="Rock_2" parent="Environment/NatureAndProps" instance=ExtResource("10_rocks_large")]
+transform = Transform3D(2.2, 0, 0, 0, 2.2, 0, 0, 0, 2.2, 6, 0, 16)
+
+[node name="Rock_3" parent="Environment/NatureAndProps" instance=ExtResource("11_rocks_small")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -5.5, 0, 14.5)
+
+[node name="Rock_4" parent="Environment/NatureAndProps" instance=ExtResource("11_rocks_small")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 5.5, 0, 14.5)
+
+[node name="Grass_1" parent="Environment/NatureAndProps" instance=ExtResource("21_grass_patch")]
+transform = Transform3D(2.4, 0, 0, 0, 2.4, 0, 0, 0, 2.4, -9, 0, -10)
+
+[node name="Grass_2" parent="Environment/NatureAndProps" instance=ExtResource("21_grass_patch")]
+transform = Transform3D(2.2, 0, 0.8, 0, 2.4, 0, -0.8, 0, 2.2, 9, 0, -10)
+
+[node name="Grass_3" parent="Environment/NatureAndProps" instance=ExtResource("21_grass_patch")]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, -10, 0, 9)
+
+[node name="Grass_4" parent="Environment/NatureAndProps" instance=ExtResource("21_grass_patch")]
+transform = Transform3D(2.2, 0, -0.6, 0, 2.3, 0, 0.6, 0, 2.2, 10, 0, 9)
+
+[node name="Grass_5" parent="Environment/NatureAndProps" instance=ExtResource("21_grass_patch")]
+transform = Transform3D(2.6, 0, 0, 0, 2.6, 0, 0, 0, 2.6, -11, 0, -1)
+
+[node name="Grass_6" parent="Environment/NatureAndProps" instance=ExtResource("21_grass_patch")]
+transform = Transform3D(2.4, 0, 0, 0, 2.4, 0, 0, 0, 2.4, 11, 0, -1)
+
+[node name="Grass_7" parent="Environment/NatureAndProps" instance=ExtResource("21_grass_patch")]
+transform = Transform3D(2.2, 0, 0.5, 0, 2.2, 0, -0.5, 0, 2.2, -6, 0, -11)
+
+[node name="Grass_8" parent="Environment/NatureAndProps" instance=ExtResource("21_grass_patch")]
+transform = Transform3D(2.2, 0, -0.5, 0, 2.2, 0, 0.5, 0, 2.2, 6, 0, -11)
+
+[node name="Backdrop_Tree_N1" parent="Environment/NatureAndProps" instance=ExtResource("8_tree_large")]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, -12, 0, -34)
+
+[node name="Backdrop_Tree_N2" parent="Environment/NatureAndProps" instance=ExtResource("8_tree_large")]
+transform = Transform3D(4.2, 0, 0, 0, 4.2, 0, 0, 0, 4.2, 0, 0, -36)
+
+[node name="Backdrop_Tree_N3" parent="Environment/NatureAndProps" instance=ExtResource("8_tree_large")]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 12, 0, -34)
+
+[node name="Backdrop_Rock_N1" parent="Environment/NatureAndProps" instance=ExtResource("10_rocks_large")]
+transform = Transform3D(3.8, 0, 0, 0, 3.5, 0, 0, 0, 3.8, -6, 0, -35)
+
+[node name="Backdrop_Rock_N2" parent="Environment/NatureAndProps" instance=ExtResource("10_rocks_large")]
+transform = Transform3D(3.8, 0, 0, 0, 3.5, 0, 0, 0, 3.8, 6, 0, -35)
+
+[node name="Backdrop_Tree_S1" parent="Environment/NatureAndProps" instance=ExtResource("8_tree_large")]
+transform = Transform3D(3.8, 0, 0, 0, 3.8, 0, 0, 0, 3.8, -14, 0, 24)
+
+[node name="Backdrop_Tree_S2" parent="Environment/NatureAndProps" instance=ExtResource("8_tree_large")]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 14, 0, 24)
+
+[node name="Backdrop_Tree_S3" parent="Environment/NatureAndProps" instance=ExtResource("8_tree_large")]
+transform = Transform3D(3.5, 0, 0, 0, 3.5, 0, 0, 0, 3.5, -20, 0, 26)
+
+[node name="Backdrop_Tree_S4" parent="Environment/NatureAndProps" instance=ExtResource("8_tree_large")]
+transform = Transform3D(3.5, 0, 0, 0, 3.5, 0, 0, 0, 3.5, 20, 0, 26)
+
+[node name="Backdrop_Tree_E1" parent="Environment/NatureAndProps" instance=ExtResource("8_tree_large")]
+transform = Transform3D(3.8, 0, 0, 0, 3.8, 0, 0, 0, 3.8, 24, 0, -8)
+
+[node name="Backdrop_Tree_E2" parent="Environment/NatureAndProps" instance=ExtResource("8_tree_large")]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 25, 0, 6)
+
+[node name="Backdrop_Rock_E1" parent="Environment/NatureAndProps" instance=ExtResource("10_rocks_large")]
+transform = Transform3D(3.2, 0, 0, 0, 3, 0, 0, 0, 3.2, 23, 0, -1)
+
+[node name="Backdrop_Tree_W1" parent="Environment/NatureAndProps" instance=ExtResource("8_tree_large")]
+transform = Transform3D(3.8, 0, 0, 0, 3.8, 0, 0, 0, 3.8, -24, 0, -8)
+
+[node name="Backdrop_Tree_W2" parent="Environment/NatureAndProps" instance=ExtResource("8_tree_large")]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, -25, 0, 6)
+
+[node name="Backdrop_Rock_W1" parent="Environment/NatureAndProps" instance=ExtResource("10_rocks_large")]
+transform = Transform3D(3.2, 0, 0, 0, 3, 0, 0, 0, 3.2, -23, 0, -1)
+
+[node name="Player" parent="." instance=ExtResource("1_player")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7, -2)
+
+[node name="WaveManager" type="Node" parent="."]
+script = ExtResource("22_wave_mgr")
+
+[node name="Spawner" parent="." instance=ExtResource("2_spawner")]
+
+[node name="HUD" parent="." instance=ExtResource("3_hud")]
