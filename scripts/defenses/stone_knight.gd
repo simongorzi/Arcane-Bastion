@@ -8,22 +8,42 @@ signal knight_defeated()
 var current_health: int = 140
 
 @export var damage: int = 35
-@export var attack_range: float = 2.6
+@export var attack_range: float = 2.8
 @export var attack_cooldown: float = 1.2
 
-@onready var sword: Node3D = get_node_or_null("SwordAnchor")
+@onready var model_holder: Node3D = get_node_or_null("ModelHolder")
 @onready var slash_particles: GPUParticles3D = get_node_or_null("SlashParticles")
 @onready var hp_label: Label3D = get_node_or_null("HPLabel")
 
+var anim_player: AnimationPlayer = null
 var _attack_timer: float = 0.0
 var _current_target: Node3D = null
-var _is_slashing: bool = false
 
 func _ready() -> void:
 	current_health = max_health
 	add_to_group("defenses")
 	add_to_group("stone_knights")
+	_setup_animations()
 	_update_ui()
+
+func _setup_animations() -> void:
+	var lib = Monster.get_shared_anim_lib()
+	if not model_holder:
+		return
+		
+	var warrior_model = model_holder.get_child(0) if model_holder.get_child_count() > 0 else null
+	if warrior_model and lib:
+		anim_player = AnimationPlayer.new()
+		anim_player.name = "AnimPlayer"
+		warrior_model.add_child(anim_player)
+		anim_player.root_node = anim_player.get_path_to(warrior_model)
+		anim_player.add_animation_library("", lib)
+		
+		# Přehrát bojovou pozici
+		if anim_player.has_animation("Idle_A"):
+			anim_player.play("Idle_A")
+		elif anim_player.has_animation("Walking_A"):
+			anim_player.play("Walking_A")
 
 func _physics_process(delta: float) -> void:
 	_attack_timer += delta
@@ -43,9 +63,12 @@ func _physics_process(delta: float) -> void:
 			_perform_slash(_current_target)
 
 func _find_target() -> void:
-	var monsters = get_tree().get_nodes_in_group("monsters")
+	var monsters = get_tree().get_nodes_in_group("enemies")
+	if monsters.is_empty():
+		monsters = get_tree().get_nodes_in_group("monsters")
+		
 	var closest: Node3D = null
-	var min_dist = attack_range + 0.5
+	var min_dist = attack_range + 0.8
 	
 	for m in monsters:
 		if not is_instance_valid(m) or (m.has_method("is_dead") and m.is_dead):
@@ -58,17 +81,17 @@ func _find_target() -> void:
 	_current_target = closest
 
 func _perform_slash(target: Node3D) -> void:
-	_is_slashing = true
 	if slash_particles:
 		slash_particles.restart()
 		slash_particles.emitting = true
 		
-	# Animace seku meče
-	if sword:
-		var t = create_tween()
-		t.tween_property(sword, "rotation:x", deg_to_rad(-60), 0.12)
-		t.tween_property(sword, "rotation:x", deg_to_rad(45), 0.15)
-		t.tween_property(sword, "rotation:x", 0.0, 0.2)
+	if anim_player:
+		if anim_player.has_animation("Attack_A"):
+			anim_player.play("Attack_A")
+			anim_player.queue("Idle_A")
+		elif anim_player.has_animation("1H_Melee_Attack"):
+			anim_player.play("1H_Melee_Attack")
+			anim_player.queue("Idle_A")
 		
 	if is_instance_valid(target) and target.has_method("take_damage"):
 		target.take_damage(damage)
@@ -77,10 +100,14 @@ func take_damage(amount: int) -> void:
 	current_health = max(0, current_health - amount)
 	_update_ui()
 	
+	if anim_player and anim_player.has_animation("Hit_A"):
+		anim_player.play("Hit_A")
+		anim_player.queue("Idle_A")
+	
 	# Zásahový záškub
 	var t = create_tween()
-	t.tween_property(self, "scale", Vector3(1.1, 0.9, 1.1), 0.08)
-	t.tween_property(self, "scale", Vector3.ONE, 0.12)
+	t.tween_property(self, "scale", Vector3(1.15, 0.9, 1.15), 0.06)
+	t.tween_property(self, "scale", Vector3.ONE, 0.1)
 	
 	if current_health <= 0:
 		_die()
@@ -91,6 +118,6 @@ func _die() -> void:
 
 func _update_ui() -> void:
 	if hp_label:
-		hp_label.text = "⚔️ Stone Knight\n%d / %d HP" % [current_health, max_health]
+		hp_label.text = "⚔️ Guardian Knight\n%d / %d HP" % [current_health, max_health]
 		var ratio = float(current_health) / float(max_health)
-		hp_label.modulate = Color(0.4, 0.9, 1.0) if ratio > 0.4 else Color(1.0, 0.3, 0.3)
+		hp_label.modulate = Color(0.3, 0.9, 1.0) if ratio > 0.4 else Color(1.0, 0.3, 0.3)

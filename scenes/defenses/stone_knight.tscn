@@ -1,21 +1,11 @@
-[gd_scene load_steps=10 format=3 uid="uid://knight001minion"]
+[gd_scene load_steps=8 format=3 uid="uid://knight001minion"]
 
 [ext_resource type="Script" path="res://scripts/defenses/stone_knight.gd" id="1_knight_script"]
-[ext_resource type="PackedScene" path="res://assets/fantasy-town/Models/GLB format/pillar-stone.glb" id="2_pillar"]
-[ext_resource type="PackedScene" path="res://assets/fantasy-town/Models/GLB format/blade.glb" id="3_blade"]
+[ext_resource type="PackedScene" path="res://assets/skeletons/KayKit_Skeletons_1.1_FREE/characters/gltf/Skeleton_Warrior.glb" id="2_warrior_model"]
 
 [sub_resource type="CapsuleShape3D" id="CapsuleShape3D_col"]
-radius = 0.6
+radius = 0.7
 height = 2.2
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_helmet"]
-albedo_color = Color(0.35, 0.4, 0.45, 1)
-roughness = 0.4
-metallic = 0.6
-
-[sub_resource type="BoxMesh" id="BoxMesh_helmet"]
-material = SubResource("StandardMaterial3D_helmet")
-size = Vector3(0.5, 0.5, 0.55)
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_slash"]
 direction = Vector3(0, 0, -1)
@@ -26,11 +16,16 @@ gravity = Vector3(0, -5.0, 0)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spark"]
 shading_mode = 0
-albedo_color = Color(1.0, 0.85, 0.3, 1)
+albedo_color = Color(0.25, 0.9, 1.0, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_spark"]
 material = SubResource("StandardMaterial3D_spark")
 size = Vector3(0.08, 0.08, 0.08)
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_rune_base"]
+top_radius = 0.9
+bottom_radius = 1.0
+height = 0.1
 
 [node name="StoneKnight" type="CharacterBody3D" groups=["defenses", "stone_knights"]]
 collision_layer = 1
@@ -41,32 +36,34 @@ script = ExtResource("1_knight_script")
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
 shape = SubResource("CapsuleShape3D_col")
 
-[node name="Body" parent="." instance=ExtResource("2_pillar")]
+[node name="RunicAura" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.05, 0)
+mesh = SubResource("CylinderMesh_rune_base")
+
+[node name="ModelHolder" type="Node3D" parent="."]
+
+[node name="Skeleton_Warrior" parent="ModelHolder" instance=ExtResource("2_warrior_model")]
 transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 0, 0, 0)
 
-[node name="Helmet" type="MeshInstance3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0)
-mesh = SubResource("BoxMesh_helmet")
-
-[node name="SwordAnchor" type="Node3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 1.1, 0)
-
-[node name="Blade" parent="SwordAnchor" instance=ExtResource("3_blade")]
-transform = Transform3D(1.8, 0, 0, 0, 1.8, 0, 0, 0, 1.8, 0, 0, -0.3)
+[node name="GuardianLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+light_color = Color(0.3, 0.85, 1.0, 1)
+light_energy = 1.8
+omni_range = 4.0
 
 [node name="HPLabel" type="Label3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
 billboard = 1
 no_depth_test = true
 render_priority = 25
-text = "⚔️ Stone Knight
+text = "⚔️ Guardian Knight
 140 / 140 HP"
 font_size = 24
 outline_size = 6
 outline_color = Color(0, 0, 0, 0.9)
 
 [node name="SlashParticles" type="GPUParticles3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, -0.8)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, -0.9)
 emitting = false
 amount = 14
 lifetime = 0.3

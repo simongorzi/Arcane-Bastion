@@ -23,7 +23,10 @@ func _process(delta: float) -> void:
 			_burst_flames()
 
 func _has_enemies_in_range() -> bool:
-	var monsters = get_tree().get_nodes_in_group("monsters")
+	var monsters = get_tree().get_nodes_in_group("enemies")
+	if monsters.is_empty():
+		monsters = get_tree().get_nodes_in_group("monsters")
+		
 	for m in monsters:
 		if is_instance_valid(m) and not (m.has_method("is_dead") and m.is_dead):
 			if global_position.distance_to(m.global_position) <= attack_range:
@@ -40,14 +43,17 @@ func _burst_flames() -> void:
 		t.tween_property(flame_light, "light_energy", 1.0, 0.45)
 
 	# Zásah všech monster v okruhu 11 metrů
-	var monsters = get_tree().get_nodes_in_group("monsters")
+	var monsters = get_tree().get_nodes_in_group("enemies")
+	if monsters.is_empty():
+		monsters = get_tree().get_nodes_in_group("monsters")
+		
 	for m in monsters:
 		if not is_instance_valid(m) or (m.has_method("is_dead") and m.is_dead):
 			continue
 		var dist = global_position.distance_to(m.global_position)
 		if dist <= attack_range:
 			if m.has_method("take_damage"):
-				m.take_damage(damage)
+				m.take_damage(damage, false, true, false)
 				# Pushback od plamene
 				if "velocity" in m:
 					var push_dir = (m.global_position - global_position).normalized()

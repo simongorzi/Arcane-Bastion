@@ -69,6 +69,7 @@ static func get_shared_anim_lib() -> AnimationLibrary:
 
 func _ready() -> void:
 	add_to_group("enemies")
+	add_to_group("monsters")
 	current_hp = max_hp
 	player = get_tree().get_first_node_in_group("player")
 	

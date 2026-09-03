@@ -23,16 +23,19 @@ func _process(delta: float) -> void:
 	
 	if _current_target and is_instance_valid(_current_target):
 		var target_pos = _current_target.global_position + Vector3(0, 0.9, 0)
-		var look_dir = (target_pos - ballista_head.global_position).normalized()
-		var target_yaw = atan2(look_dir.x, look_dir.z)
-		ballista_head.rotation.y = lerp_angle(ballista_head.rotation.y, target_yaw, 10.0 * delta)
+		var aim_pos = Vector3(target_pos.x, ballista_head.global_position.y, target_pos.z)
+		if ballista_head.global_position.distance_squared_to(aim_pos) > 0.01:
+			ballista_head.look_at(aim_pos, Vector3.UP)
 		
 		if _attack_timer >= attack_cooldown:
 			_attack_timer = 0.0
 			_fire_bolt(target_pos)
 
 func _find_target() -> void:
-	var monsters = get_tree().get_nodes_in_group("monsters")
+	var monsters = get_tree().get_nodes_in_group("enemies")
+	if monsters.is_empty():
+		monsters = get_tree().get_nodes_in_group("monsters")
+		
 	var closest: Node3D = null
 	var min_dist = attack_range
 	
@@ -66,4 +69,5 @@ func _fire_bolt(target_pos: Vector3) -> void:
 		bolt.global_position = ballista_head.global_position + Vector3(0, 0.8, 0)
 		bolt.damage = damage
 		bolt.speed = 36.0
-		bolt.direction = (target_pos - bolt.global_position).normalized()
+		var dir = (target_pos - bolt.global_position).normalized()
+		bolt.setup_direction(dir)
