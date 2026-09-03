@@ -131,11 +131,15 @@ func get_tactical_target_pos() -> Vector3:
 	var STAIRS_BOTTOM = Vector3(0.0, 0.0, 5.5)
 	var STAIRS_TOP = Vector3(0.0, 2.4, 0.2)
 	
-	# 1. Průchod hradbami – pokud je kostlivec ještě venku, navede se nejprve do brány
-	if abs(my_pos.z) > 14.5:
-		return Vector3(0.0, 0.0, signf(my_pos.z) * 12.5)
-	if abs(my_pos.x) > 14.5:
-		return Vector3(signf(my_pos.x) * 12.5, 0.0, 0.0)
+	# 1. Průchod vnějšími hradbami – navedení k nejbližší otevřené bráně
+	if my_pos.z > 26.5:
+		return Vector3(0.0, 0.0, 23.5) # Jižní hlavní brána
+	elif my_pos.x > 29.5:
+		return Vector3(27.0, 0.0, 3.5) # Východní obchodní brána
+	elif my_pos.x < -27.5:
+		return Vector3(-25.5, 0.0, -2.5) # Západní výpadová branka
+	elif my_pos.z < -24.5:
+		return Vector3(0.0, 0.0, -21.0) # Severní brána svatyně
 		
 	# 2. Hráč je nahoře na věži (Y > 1.4)
 	if p_pos.y > 1.4:
