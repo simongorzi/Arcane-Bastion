@@ -60,31 +60,56 @@ func _gather_spawn_points() -> void:
 	if _spawn_points.is_empty():
 		_spawn_points.append(self)
 
+@export var pack_size_min: int = 3
+@export var pack_size_max: int = 5
+
 func _on_timer_timeout() -> void:
 	spawn_wave()
 
-## Vygeneruje monstrum na náhodném z určených spawn bodů
+## Vygeneruje útočnou smečku monster ve formaci
 func spawn_wave() -> void:
-	if monster_scene == null:
-		push_warning("Monster scene není přiřazena v Spawneru!")
+	if monster_scene == null or _spawn_points.is_empty():
 		return
 
-	# Omezení maximálního počtu současně živých monster pro zachování plynulosti
+	var wave_mgr = get_tree().get_first_node_in_group("wave_manager")
+	var remaining_in_wave = 999
+	if wave_mgr:
+		if not wave_mgr.is_wave_active:
+			return
+		remaining_in_wave = wave_mgr.enemies_to_spawn_this_wave - wave_mgr.enemies_spawned_so_far
+		if remaining_in_wave <= 0:
+			return
+
 	var current_enemies = get_tree().get_nodes_in_group("enemies")
-	if current_enemies.size() >= max_active_monsters:
+	var capacity = max_active_monsters - current_enemies.size()
+	if capacity <= 0:
 		return
 
-	# Výběr náhodného bodu okolo hradu
+	# Určení velikosti smečky pro tento útok
+	var count_to_spawn = clampi(randi_range(pack_size_min, pack_size_max), 1, min(remaining_in_wave, capacity))
 	var chosen_point: Node3D = _spawn_points.pick_random()
 	var spawn_pos: Vector3 = chosen_point.global_position
-	
-	# Drobná náhodná odchylka v okruhu 1.5 m pro pestřejší příchod
-	var random_offset: Vector3 = Vector3(randf_range(-1.5, 1.5), 0, randf_range(-1.5, 1.5))
-	
-	var monster_instance = monster_scene.instantiate()
-	get_tree().root.add_child(monster_instance)
-	monster_instance.global_position = spawn_pos + random_offset
-	
-	var wave_mgr = get_tree().get_first_node_in_group("wave_manager")
-	if wave_mgr:
-		wave_mgr.notify_enemy_spawned(monster_instance)
+
+	for i in range(count_to_spawn):
+		var monster_instance: Monster = monster_scene.instantiate()
+		get_tree().root.add_child(monster_instance)
+		
+		# Rozmístění ve formaci okolo brány
+		var formation_offset = Vector3(
+			randf_range(-2.4, 2.4),
+			0,
+			randf_range(-2.4, 2.4)
+		)
+		monster_instance.global_position = spawn_pos + formation_offset
+		
+		# Výběr archetypu nepřítele (Sprinter, Brute, Warrior)
+		var roll = randf()
+		if roll < 0.22:
+			monster_instance.setup_archetype(Monster.EnemyType.SPRINTER)
+		elif roll < 0.40:
+			monster_instance.setup_archetype(Monster.EnemyType.BRUTE)
+		else:
+			monster_instance.setup_archetype(Monster.EnemyType.WARRIOR)
+
+		if wave_mgr:
+			wave_mgr.notify_enemy_spawned(monster_instance)

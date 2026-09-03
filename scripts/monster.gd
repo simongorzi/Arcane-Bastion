@@ -228,13 +228,47 @@ func _handle_attack(_delta: float) -> void:
 		if player.has_method("take_damage"):
 			player.take_damage(attack_damage)
 
-func take_damage(amount: int) -> void:
+enum EnemyType { WARRIOR, SPRINTER, BRUTE }
+var enemy_type: EnemyType = EnemyType.WARRIOR
+
+func setup_archetype(type: EnemyType) -> void:
+	enemy_type = type
+	match type:
+		EnemyType.SPRINTER:
+			speed = 4.6
+			max_hp = 45
+			current_hp = 45
+			score_value = 150
+			scale = Vector3(0.85, 0.85, 0.85)
+		EnemyType.BRUTE:
+			speed = 2.2
+			max_hp = 140
+			current_hp = 140
+			attack_damage = 25
+			score_value = 250
+			scale = Vector3(1.28, 1.28, 1.28)
+		EnemyType.WARRIOR:
+			speed = 3.2
+			max_hp = 70
+			current_hp = 70
+			score_value = 100
+
+func take_damage(amount: int, is_crit: bool = false, is_fire: bool = false, is_frost: bool = false) -> void:
 	if _is_dying:
 		return
 		
 	current_hp -= amount
 	
-	# Přehrání animace zásahu
+	# 1. Zobrazení 3D létajícího čísla poškození
+	_spawn_damage_number(amount, is_crit, is_fire, is_frost)
+	
+	# 2. Oznámení pro HUD (Hitmarker na zaměřovači)
+	if is_inside_tree() and get_tree():
+		var hud = get_tree().get_first_node_in_group("hud")
+		if hud and hud.has_method("on_enemy_hit"):
+			hud.on_enemy_hit(is_crit)
+			
+	# 3. Přehrání animace zásahu
 	if anim_player and anim_player.has_animation("Hit_A") and current_hp > 0:
 		anim_player.play("Hit_A")
 		anim_player.queue("Walking_A")
@@ -243,6 +277,14 @@ func take_damage(amount: int) -> void:
 
 	if current_hp <= 0:
 		die()
+
+func _spawn_damage_number(amount: int, is_crit: bool, is_fire: bool, is_frost: bool) -> void:
+	var dmg_scene = load("res://scenes/damage_number.tscn")
+	if dmg_scene and is_inside_tree():
+		var dmg_inst = dmg_scene.instantiate()
+		get_tree().root.add_child(dmg_inst)
+		dmg_inst.global_position = global_position + Vector3(randf_range(-0.3, 0.3), 1.6, randf_range(-0.3, 0.3))
+		dmg_inst.setup(amount, is_crit, is_fire, is_frost)
 
 func apply_slow(factor: float, duration: float) -> void:
 	var orig_speed = speed
@@ -254,32 +296,48 @@ func apply_slow(factor: float, duration: float) -> void:
 func _play_hit_flash() -> void:
 	if model_holder:
 		var hit_tween: Tween = create_tween()
-		hit_tween.tween_property(model_holder, "scale", Vector3(1.15, 0.9, 1.15), 0.05)
-		hit_tween.tween_property(model_holder, "scale", Vector3.ONE, 0.1)
+		hit_tween.tween_property(model_holder, "scale", Vector3(1.2, 0.85, 1.2), 0.04)
+		hit_tween.tween_property(model_holder, "scale", Vector3.ONE, 0.09)
 
 func die() -> void:
+	if _is_dying:
+		return
 	_is_dying = true
 	emit_signal("enemy_defeated", score_value)
 	
 	if is_inside_tree() and get_tree():
+		# Oznámení pro HUD (Kill hitmarker a inkrementace komba)
 		var hud = get_tree().get_first_node_in_group("hud")
-		if hud and hud.has_method("add_score"):
+		if hud and hud.has_method("on_enemy_killed"):
+			hud.on_enemy_killed()
+		elif hud and hud.has_method("add_score"):
 			hud.add_score(score_value)
+			
+		# Otřes kamery hráče při zásahu / eliminaci
+		var player_node = get_tree().get_first_node_in_group("player")
+		if player_node and player_node.has_method("add_screenshake"):
+			player_node.add_screenshake(0.04)
+
+		# Vytvoření zářivého krystalu (Soul Orb)
+		var orb_scene = load("res://scenes/soul_orb.tscn")
+		if orb_scene:
+			var orb = orb_scene.instantiate()
+			get_tree().root.add_child(orb)
+			orb.global_position = global_position + Vector3(0, 0.4, 0)
+			orb.score_value = score_value
 
 	var col = get_node_or_null("CollisionShape3D")
 	if col:
 		col.set_deferred("disabled", true)
 
-	# Přehrání animace smrti kostlivce
-	if anim_player and anim_player.has_animation("Death_A"):
-		anim_player.play("Death_A")
-		await anim_player.animation_finished
-
-	# Částicový puff rozpadu
+	# Bleskový rozpad na kosti a jiskry
 	if death_particles:
 		death_particles.emitting = true
-		if model_holder:
-			model_holder.visible = false
-		await get_tree().create_timer(0.8).timeout
+		
+	if model_holder:
+		var fade_tween = create_tween()
+		fade_tween.tween_property(model_holder, "scale", Vector3(1.3, 0.15, 1.3), 0.08)
+		fade_tween.tween_callback(func(): model_holder.visible = false)
 
+	await get_tree().create_timer(0.75).timeout
 	queue_free()

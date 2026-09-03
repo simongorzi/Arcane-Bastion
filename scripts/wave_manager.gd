@@ -44,8 +44,8 @@ func start_next_wave() -> void:
 	is_wave_active = true
 	is_intermission = false
 	
-	# Výpočet počtu nepřátel pro vlnu (např. Vlna 1 = 8, Vlna 2 = 12, Vlna 3 = 16, Vlna 4 = 22...)
-	enemies_to_spawn_this_wave = 6 + current_wave * 4
+	# Výpočet počtu nepřátel pro vlnu (Vlna 1 = 18, Vlna 2 = 24, Vlna 3 = 30, Vlna 4 = 36...)
+	enemies_to_spawn_this_wave = 12 + current_wave * 6
 	enemies_spawned_so_far = 0
 	active_enemies_count = 0
 	
@@ -54,7 +54,7 @@ func start_next_wave() -> void:
 	
 	# Konfigurace spawneru
 	if spawner:
-		spawner.spawn_interval = maxf(1.8, 3.8 - current_wave * 0.25)
+		spawner.spawn_interval = maxf(2.0, 3.8 - current_wave * 0.2)
 		if spawner.get("timer"):
 			spawner.timer.wait_time = spawner.spawn_interval
 			spawner.timer.start()

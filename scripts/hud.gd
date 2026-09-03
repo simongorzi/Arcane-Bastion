@@ -11,6 +11,10 @@ extends CanvasLayer
 @onready var banner_panel: PanelContainer = get_node_or_null("Control/BannerPanel")
 @onready var banner_title: Label = get_node_or_null("Control/BannerPanel/VBox/BannerTitle")
 @onready var banner_subtitle: Label = get_node_or_null("Control/BannerPanel/VBox/BannerSubtitle")
+@onready var hitmarker: Control = get_node_or_null("Control/Crosshair/Hitmarker")
+@onready var combo_container: Control = get_node_or_null("Control/ComboContainer")
+@onready var combo_label: Label = get_node_or_null("Control/ComboContainer/ComboLabel")
+@onready var combo_bar: ProgressBar = get_node_or_null("Control/ComboContainer/ComboBar")
 
 # Pause Menu
 @onready var pause_panel: Control = get_node_or_null("Control/PausePanel")
@@ -39,6 +43,13 @@ var kills: int = 0
 var is_game_over: bool = false
 var _player: Player = null
 
+# Combo Streak systém
+var combo_count: int = 0
+var combo_timer: float = 0.0
+const COMBO_WINDOW: float = 3.6
+var _hitmarker_tween: Tween = null
+var _combo_tween: Tween = null
+
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	add_to_group("hud")
@@ -51,6 +62,10 @@ func _ready() -> void:
 		game_over_panel.visible = false
 	if banner_panel:
 		banner_panel.visible = false
+	if combo_container:
+		combo_container.modulate.a = 0.0
+	if hitmarker:
+		hitmarker.modulate.a = 0.0
 		
 	# Zapojení tlačítek pauzy
 	if resume_btn:
@@ -88,8 +103,16 @@ func _ready() -> void:
 		
 	update_ui(100, 100)
 
-	# Asynchronní propojení s WaveManagerem (zaručuje platnost bez ohledu na pořadí stromu)
+	# Propojení s WaveManagerem
 	_connect_wave_manager()
+
+func _process(delta: float) -> void:
+	if combo_timer > 0.0:
+		combo_timer -= delta
+		if combo_bar:
+			combo_bar.value = (combo_timer / COMBO_WINDOW) * 100.0
+		if combo_timer <= 0.0:
+			_reset_combo()
 
 func _connect_wave_manager() -> void:
 	await get_tree().process_frame
@@ -235,6 +258,84 @@ func add_score(amount: int) -> void:
 		score_label.text = "Score: %d" % score
 	if kill_count_label:
 		kill_count_label.text = "Kills: %d" % kills
+
+func on_enemy_hit(is_crit: bool = false) -> void:
+	_trigger_hitmarker(Color(1.0, 0.85, 0.2) if is_crit else Color(1.0, 1.0, 1.0))
+
+func on_enemy_killed() -> void:
+	_trigger_hitmarker(Color(1.0, 0.25, 0.25), true)
+	add_combo()
+
+func _trigger_hitmarker(color: Color, is_kill: bool = false) -> void:
+	if not hitmarker:
+		return
+	if _hitmarker_tween and _hitmarker_tween.is_valid():
+		_hitmarker_tween.kill()
+		
+	hitmarker.modulate = color
+	hitmarker.scale = Vector2(1.35, 1.35) if is_kill else Vector2(1.1, 1.1)
+	
+	_hitmarker_tween = create_tween()
+	_hitmarker_tween.tween_property(hitmarker, "scale", Vector2.ONE, 0.08)
+	_hitmarker_tween.parallel().tween_property(hitmarker, "modulate:a", 1.0, 0.03)
+	_hitmarker_tween.tween_property(hitmarker, "modulate:a", 0.0, 0.14)
+
+func add_combo() -> void:
+	combo_count += 1
+	combo_timer = COMBO_WINDOW
+	_update_combo_ui()
+
+func add_soul_gem(amount: int) -> void:
+	var multiplier = 1.0 + (combo_count * 0.1)
+	var gained = int(amount * multiplier)
+	score += gained
+	if score_label:
+		score_label.text = "Score: %d" % score
+		
+	# Sebrání krystalu prodlužuje combo streak
+	combo_timer = minf(COMBO_WINDOW, combo_timer + 0.8)
+	if combo_container and combo_container.modulate.a > 0.1:
+		_bounce_combo()
+
+func _update_combo_ui() -> void:
+	if not combo_container or not combo_label:
+		return
+		
+	combo_container.modulate.a = 1.0
+	
+	if combo_count <= 4:
+		combo_label.text = "✦ COMBO x%d ✦" % combo_count
+		combo_label.add_theme_color_override("font_color", Color(0.3, 0.85, 1.0))
+	elif combo_count <= 9:
+		combo_label.text = "🔥 STREAK x%d! 🔥" % combo_count
+		combo_label.add_theme_color_override("font_color", Color(1.0, 0.85, 0.2))
+	elif combo_count <= 14:
+		combo_label.text = "⚡ RAMPAGE x%d! ⚡" % combo_count
+		combo_label.add_theme_color_override("font_color", Color(1.0, 0.45, 0.1))
+	elif combo_count <= 19:
+		combo_label.text = "💥 UNSTOPPABLE x%d! 💥" % combo_count
+		combo_label.add_theme_color_override("font_color", Color(1.0, 0.2, 0.6))
+	else:
+		combo_label.text = "👑 GODLIKE x%d! 👑" % combo_count
+		combo_label.add_theme_color_override("font_color", Color(1.0, 0.2, 0.2))
+
+	_bounce_combo()
+
+func _bounce_combo() -> void:
+	if not combo_container:
+		return
+	if _combo_tween and _combo_tween.is_valid():
+		_combo_tween.kill()
+		
+	_combo_tween = create_tween().set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	combo_container.scale = Vector2(1.3, 1.3)
+	_combo_tween.tween_property(combo_container, "scale", Vector2.ONE, 0.18)
+
+func _reset_combo() -> void:
+	combo_count = 0
+	if combo_container:
+		var fade = create_tween()
+		fade.tween_property(combo_container, "modulate:a", 0.0, 0.3)
 
 func update_ui(hp: int, max_hp: int) -> void:
 	if health_bar:

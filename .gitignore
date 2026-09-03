@@ -21,3 +21,8 @@ desktop.ini
 # Editor configuration
 .vscode/*
 !.vscode/launch.json
+!.vscode/settings.json
+
+# Local Godot binaries and wrappers
+godot.exe
+godot.cmd

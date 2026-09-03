@@ -134,6 +134,66 @@ layout_mode = 2
 mouse_filter = 2
 color = Color(1, 1, 1, 0.85)
 
+[node name="Hitmarker" type="Control" parent="Control/Crosshair"]
+modulate = Color(1, 1, 1, 0)
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 2
+mouse_filter = 2
+
+[node name="Pip1" type="Line2D" parent="Control/Crosshair/Hitmarker"]
+points = PackedVector2Array(4, 4, 9, 9)
+width = 2.0
+default_color = Color(1, 1, 1, 0.95)
+
+[node name="Pip2" type="Line2D" parent="Control/Crosshair/Hitmarker"]
+points = PackedVector2Array(20, 4, 15, 9)
+width = 2.0
+default_color = Color(1, 1, 1, 0.95)
+
+[node name="Pip3" type="Line2D" parent="Control/Crosshair/Hitmarker"]
+points = PackedVector2Array(4, 20, 9, 15)
+width = 2.0
+default_color = Color(1, 1, 1, 0.95)
+
+[node name="Pip4" type="Line2D" parent="Control/Crosshair/Hitmarker"]
+points = PackedVector2Array(20, 20, 15, 15)
+width = 2.0
+default_color = Color(1, 1, 1, 0.95)
+
+[node name="ComboContainer" type="VBoxContainer" parent="Control"]
+modulate = Color(1, 1, 1, 0)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -120.0
+offset_top = 35.0
+offset_right = 120.0
+offset_bottom = 85.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+alignment = 1
+
+[node name="ComboLabel" type="Label" parent="Control/ComboContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.2, 1)
+theme_override_colors/font_shadow_color = Color(0, 0, 0, 0.9)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_font_sizes/font_size = 22
+text = "✦ COMBO x3 ✦"
+horizontal_alignment = 1
+
+[node name="ComboBar" type="ProgressBar" parent="Control/ComboContainer"]
+custom_minimum_size = Vector2(160, 4)
+layout_mode = 2
+size_flags_horizontal = 4
+mouse_filter = 2
+show_percentage = false
+
 [node name="TopBar" type="HBoxContainer" parent="Control"]
 layout_mode = 1
 anchors_preset = 10

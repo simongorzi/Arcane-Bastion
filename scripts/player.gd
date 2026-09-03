@@ -237,6 +237,17 @@ func play_weapon_recoil() -> void:
 	tween.chain().tween_property(weapon_holder, "position", _default_weapon_pos, 0.18)
 	tween.parallel().tween_property(weapon_holder, "rotation", Vector3.ZERO, 0.18)
 
+## Punchy dynamický otřes kamery (zásahy, výbuchy, eliminace)
+func add_screenshake(strength: float) -> void:
+	if camera:
+		var shake_tween = create_tween()
+		var ox = randf_range(-strength, strength)
+		var oy = randf_range(-strength, strength)
+		shake_tween.tween_property(camera, "h_offset", ox, 0.035)
+		shake_tween.tween_property(camera, "v_offset", oy, 0.035)
+		shake_tween.tween_property(camera, "h_offset", 0.0, 0.08)
+		shake_tween.parallel().tween_property(camera, "v_offset", 0.0, 0.08)
+
 ## Procedurální sway (reakce na myš) a pohupování při chůzi
 func process_weapon_effects(delta: float, input_dir: Vector2) -> void:
 	if not weapon_holder:

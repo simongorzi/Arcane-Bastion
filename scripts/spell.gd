@@ -61,7 +61,7 @@ func _on_body_entered(body: Node3D) -> void:
 		final_damage = int(final_damage * 2.5)
 	
 	if body.has_method("take_damage"):
-		body.take_damage(final_damage)
+		body.take_damage(final_damage, is_crit, is_fireball, is_frost)
 	elif body.is_in_group("enemies") and body.has_method("hit"):
 		body.hit(final_damage)
 		
@@ -87,7 +87,7 @@ func _on_area_entered(area: Area3D) -> void:
 		var final_damage = damage
 		if is_crit:
 			final_damage = int(final_damage * 2.5)
-		parent.take_damage(final_damage)
+		parent.take_damage(final_damage, is_crit, is_fireball, is_frost)
 		if is_frost and parent.has_method("apply_slow"):
 			parent.apply_slow(0.5, 4.0)
 		if is_fireball:
@@ -97,12 +97,17 @@ func _on_area_entered(area: Area3D) -> void:
 		destroy_spell()
 
 func _trigger_fireball_aoe(pos: Vector3, aoe_damage: int) -> void:
+	# Screenshake při explozi ohnivé koule
+	var player_node = get_tree().get_first_node_in_group("player")
+	if player_node and player_node.has_method("add_screenshake"):
+		player_node.add_screenshake(0.06)
+
 	var enemies = get_tree().get_nodes_in_group("enemies")
 	for enemy in enemies:
 		if is_instance_valid(enemy) and enemy.has_method("take_damage"):
 			var dist = pos.distance_to(enemy.global_position)
-			if dist <= 3.5:
-				enemy.take_damage(int(aoe_damage * 0.8))
+			if dist <= 3.8:
+				enemy.take_damage(int(aoe_damage * 0.8), false, true, false)
 
 func _trigger_chain_lightning(initial_target: Node3D, lightning_damage: int) -> void:
 	var enemies = get_tree().get_nodes_in_group("enemies")
@@ -111,7 +116,7 @@ func _trigger_chain_lightning(initial_target: Node3D, lightning_damage: int) -> 
 		if is_instance_valid(enemy) and enemy != initial_target and enemy.has_method("take_damage"):
 			var dist = initial_target.global_position.distance_to(enemy.global_position)
 			if dist <= 8.0:
-				enemy.take_damage(lightning_damage)
+				enemy.take_damage(lightning_damage, false, false, false)
 				hit_count += 1
 				if hit_count >= 3:
 					break
