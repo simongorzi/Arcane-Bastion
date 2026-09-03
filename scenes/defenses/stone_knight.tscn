@@ -1,0 +1,76 @@
+[gd_scene load_steps=10 format=3 uid="uid://knight001minion"]
+
+[ext_resource type="Script" path="res://scripts/defenses/stone_knight.gd" id="1_knight_script"]
+[ext_resource type="PackedScene" path="res://assets/fantasy-town/Models/GLB format/pillar-stone.glb" id="2_pillar"]
+[ext_resource type="PackedScene" path="res://assets/fantasy-town/Models/GLB format/blade.glb" id="3_blade"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_col"]
+radius = 0.6
+height = 2.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_helmet"]
+albedo_color = Color(0.35, 0.4, 0.45, 1)
+roughness = 0.4
+metallic = 0.6
+
+[sub_resource type="BoxMesh" id="BoxMesh_helmet"]
+material = SubResource("StandardMaterial3D_helmet")
+size = Vector3(0.5, 0.5, 0.55)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_slash"]
+direction = Vector3(0, 0, -1)
+spread = 45.0
+initial_velocity_min = 4.0
+initial_velocity_max = 8.0
+gravity = Vector3(0, -5.0, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spark"]
+shading_mode = 0
+albedo_color = Color(1.0, 0.85, 0.3, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_spark"]
+material = SubResource("StandardMaterial3D_spark")
+size = Vector3(0.08, 0.08, 0.08)
+
+[node name="StoneKnight" type="CharacterBody3D" groups=["defenses", "stone_knights"]]
+collision_layer = 1
+collision_mask = 7
+script = ExtResource("1_knight_script")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+shape = SubResource("CapsuleShape3D_col")
+
+[node name="Body" parent="." instance=ExtResource("2_pillar")]
+transform = Transform3D(1.1, 0, 0, 0, 1.1, 0, 0, 0, 1.1, 0, 0, 0)
+
+[node name="Helmet" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.9, 0)
+mesh = SubResource("BoxMesh_helmet")
+
+[node name="SwordAnchor" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.55, 1.1, 0)
+
+[node name="Blade" parent="SwordAnchor" instance=ExtResource("3_blade")]
+transform = Transform3D(1.8, 0, 0, 0, 1.8, 0, 0, 0, 1.8, 0, 0, -0.3)
+
+[node name="HPLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.5, 0)
+billboard = 1
+no_depth_test = true
+render_priority = 25
+text = "⚔️ Stone Knight
+140 / 140 HP"
+font_size = 24
+outline_size = 6
+outline_color = Color(0, 0, 0, 0.9)
+
+[node name="SlashParticles" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, -0.8)
+emitting = false
+amount = 14
+lifetime = 0.3
+one_shot = true
+explosiveness = 0.9
+process_material = SubResource("ParticleProcessMaterial_slash")
+draw_pass_1 = SubResource("BoxMesh_spark")

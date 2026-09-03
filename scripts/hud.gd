@@ -16,6 +16,15 @@ extends CanvasLayer
 @onready var combo_label: Label = get_node_or_null("Control/ComboContainer/ComboLabel")
 @onready var combo_bar: ProgressBar = get_node_or_null("Control/ComboContainer/ComboBar")
 @onready var essence_label: Label = get_node_or_null("Control/TopBar/EssencePanel/EssenceLabel")
+@onready var gate_label: Label = get_node_or_null("Control/TopBar/GatePanel/GateLabel")
+@onready var tower_label: Label = get_node_or_null("Control/TopBar/TowerPanel/TowerLabel")
+@onready var build_bar: PanelContainer = get_node_or_null("Control/BuildBar")
+@onready var build_items: Array[Label] = [
+	get_node_or_null("Control/BuildBar/HBox/Item1"),
+	get_node_or_null("Control/BuildBar/HBox/Item2"),
+	get_node_or_null("Control/BuildBar/HBox/Item3"),
+	get_node_or_null("Control/BuildBar/HBox/Item4")
+]
 
 var soul_essences: int = 0
 
@@ -69,6 +78,8 @@ func _ready() -> void:
 		combo_container.modulate.a = 0.0
 	if hitmarker:
 		hitmarker.modulate.a = 0.0
+	if build_bar:
+		build_bar.visible = false
 		
 	# Zapojení tlačítek pauzy
 	if resume_btn:
@@ -106,8 +117,9 @@ func _ready() -> void:
 		
 	update_ui(100, 100)
 
-	# Propojení s WaveManagerem
+	# Propojení s WaveManagerem a Hradní Bránou
 	_connect_wave_manager()
+	_connect_gate()
 
 func _process(delta: float) -> void:
 	if combo_timer > 0.0:
@@ -317,6 +329,49 @@ func _update_essence_ui() -> void:
 		var t = create_tween()
 		t.tween_property(essence_label, "scale", Vector2(1.25, 1.25), 0.07)
 		t.tween_property(essence_label, "scale", Vector2.ONE, 0.12)
+
+func _connect_gate() -> void:
+	await get_tree().process_frame
+	var gate = get_tree().get_first_node_in_group("fortress_gate")
+	if gate:
+		gate.gate_health_changed.connect(update_gate_health)
+		gate.gate_destroyed.connect(on_gate_destroyed)
+
+func update_gate_health(current_hp: int, _max_hp: int) -> void:
+	if gate_label:
+		gate_label.text = "🏰 Gate: %d HP" % current_hp
+		var t = create_tween()
+		t.tween_property(gate_label, "scale", Vector2(1.2, 1.2), 0.08)
+		t.tween_property(gate_label, "scale", Vector2.ONE, 0.12)
+
+func on_gate_destroyed() -> void:
+	is_game_over = true
+	get_tree().paused = true
+	Input.set_mouse_mode(Input.MOUSE_MODE_VISIBLE)
+	if game_over_panel:
+		game_over_panel.visible = true
+		var title = game_over_panel.get_node_or_null("VBoxContainer/GameOverTitle")
+		if title:
+			title.text = "THE FORTRESS GATE HAS FALLEN!"
+	if final_score_label:
+		final_score_label.text = "Final Score: %d" % score
+	if final_kills_label:
+		final_kills_label.text = "Enemies Defeated: %d" % kills
+
+func update_tower_count(current_count: int, max_count: int) -> void:
+	if tower_label:
+		tower_label.text = "Towers: %d/%d" % [current_count, max_count]
+
+func set_build_bar_visible(is_active: bool, selected_index: int = 0) -> void:
+	if build_bar:
+		build_bar.visible = is_active
+	for i in range(build_items.size()):
+		var item = build_items[i]
+		if item:
+			if i == selected_index:
+				item.modulate = Color(1.0, 0.9, 0.2, 1.0)
+			else:
+				item.modulate = Color(0.7, 0.7, 0.7, 0.8)
 
 func _update_combo_ui() -> void:
 	if not combo_container or not combo_label:

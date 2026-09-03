@@ -1,0 +1,91 @@
+[gd_scene load_steps=12 format=3 uid="uid://frost001obelisk"]
+
+[ext_resource type="Script" path="res://scripts/defenses/frost_obelisk.gd" id="1_frost_script"]
+[ext_resource type="PackedScene" path="res://assets/fantasy-town/Models/GLB format/pillar-stone.glb" id="2_pillar"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_col"]
+height = 2.8
+radius = 1.2
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_crystal"]
+shading_mode = 0
+albedo_color = Color(0.2, 0.95, 1, 1)
+
+[sub_resource type="PrismMesh" id="PrismMesh_top"]
+material = SubResource("StandardMaterial3D_crystal")
+size = Vector3(0.5, 0.7, 0.5)
+
+[sub_resource type="PrismMesh" id="PrismMesh_bottom"]
+material = SubResource("StandardMaterial3D_crystal")
+size = Vector3(0.5, 0.7, 0.5)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_frost"]
+direction = Vector3(0, 0, 0)
+spread = 180.0
+initial_velocity_min = 6.0
+initial_velocity_max = 12.0
+gravity = Vector3(0, -1.0, 0)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_flake"]
+shading_mode = 0
+albedo_color = Color(0.6, 0.95, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_flake"]
+material = SubResource("StandardMaterial3D_flake")
+size = Vector3(0.12, 0.12, 0.12)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ring"]
+transparency = 1
+blend_mode = 1
+shading_mode = 0
+albedo_color = Color(0.2, 0.85, 1, 0.4)
+
+[sub_resource type="TorusMesh" id="TorusMesh_ring"]
+material = SubResource("StandardMaterial3D_ring")
+inner_radius = 1.0
+outer_radius = 1.4
+
+[node name="FrostObelisk" type="Node3D" groups=["defenses", "towers"]]
+script = ExtResource("1_frost_script")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask = 7
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.4, 0)
+shape = SubResource("CylinderShape3D_col")
+
+[node name="Pillar" parent="." instance=ExtResource("2_pillar")]
+transform = Transform3D(1.6, 0, 0, 0, 1.6, 0, 0, 0, 1.6, 0, 0, 0)
+
+[node name="CrystalMesh" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
+
+[node name="Top" type="MeshInstance3D" parent="CrystalMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.16, 0)
+mesh = SubResource("PrismMesh_top")
+
+[node name="Bottom" type="MeshInstance3D" parent="CrystalMesh"]
+transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, -0.16, 0)
+mesh = SubResource("PrismMesh_bottom")
+
+[node name="FrostRing" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4, 0)
+mesh = SubResource("TorusMesh_ring")
+
+[node name="FrostParticles" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+emitting = false
+amount = 40
+lifetime = 0.5
+one_shot = true
+explosiveness = 0.85
+process_material = SubResource("ParticleProcessMaterial_frost")
+draw_pass_1 = SubResource("BoxMesh_flake")
+
+[node name="FrostLight" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.4, 0)
+light_color = Color(0.2, 0.9, 1, 1)
+light_energy = 0.6
+omni_range = 8.0

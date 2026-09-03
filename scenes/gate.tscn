@@ -1,0 +1,79 @@
+[gd_scene load_steps=10 format=3 uid="uid://gate001citadel"]
+
+[ext_resource type="Script" path="res://scripts/gate.gd" id="1_gate_script"]
+[ext_resource type="PackedScene" path="res://assets/castle/Models/GLB format/gate.glb" id="2_gate_arch"]
+[ext_resource type="PackedScene" path="res://assets/castle/Models/GLB format/metal-gate.glb" id="3_metal_portcullis"]
+[ext_resource type="PackedScene" path="res://assets/castle/Models/GLB format/tower-square.glb" id="4_tower"]
+[ext_resource type="PackedScene" path="res://assets/castle/Models/GLB format/tower-square-roof.glb" id="5_roof"]
+[ext_resource type="PackedScene" path="res://assets/castle/Models/GLB format/flag-banner-long.glb" id="6_banner"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_gate_col"]
+size = Vector3(14, 8, 3.5)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_sparks"]
+direction = Vector3(0, 1, 0)
+spread = 60.0
+initial_velocity_min = 4.0
+initial_velocity_max = 8.0
+gravity = Vector3(0, -9.8, 0)
+
+[sub_resource type="BoxMesh" id="BoxMesh_spark"]
+size = Vector3(0.12, 0.12, 0.12)
+
+[node name="FortressGate" type="Node3D" groups=["fortress_gate"]]
+script = ExtResource("1_gate_script")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask = 7
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.5, 0)
+shape = SubResource("BoxShape3D_gate_col")
+
+[node name="GateMesh" type="Node3D" parent="."]
+
+[node name="StoneArch" parent="GateMesh" instance=ExtResource("2_gate_arch")]
+transform = Transform3D(2.6, 0, 0, 0, 2.6, 0, 0, 0, 2.6, 0, 0, 0)
+
+[node name="Portcullis" parent="GateMesh" instance=ExtResource("3_metal_portcullis")]
+transform = Transform3D(2.4, 0, 0, 0, 2.4, 0, 0, 0, 2.4, 0, 0, 0)
+
+[node name="LeftTower" parent="GateMesh" instance=ExtResource("4_tower")]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, -4.8, 0, 0)
+
+[node name="LeftRoof" parent="GateMesh" instance=ExtResource("5_roof")]
+transform = Transform3D(2.55, 0, 0, 0, 2.55, 0, 0, 0, 2.55, -4.8, 3.88, 0)
+
+[node name="LeftBanner" parent="GateMesh" instance=ExtResource("6_banner")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, -4.8, 2.8, 1.25)
+
+[node name="RightTower" parent="GateMesh" instance=ExtResource("4_tower")]
+transform = Transform3D(2.5, 0, 0, 0, 2.5, 0, 0, 0, 2.5, 4.8, 0, 0)
+
+[node name="RightRoof" parent="GateMesh" instance=ExtResource("5_roof")]
+transform = Transform3D(2.55, 0, 0, 0, 2.55, 0, 0, 0, 2.55, 4.8, 3.88, 0)
+
+[node name="RightBanner" parent="GateMesh" instance=ExtResource("6_banner")]
+transform = Transform3D(2, 0, 0, 0, 2, 0, 0, 0, 2, 4.8, 2.8, 1.25)
+
+[node name="HealthLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 6.8, 0.5)
+billboard = 1
+no_depth_test = true
+render_priority = 30
+text = "🏰 Fortress Gate
+100 / 100 HP"
+font_size = 32
+outline_size = 8
+outline_color = Color(0, 0, 0, 0.9)
+
+[node name="HitSparks" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.0, 0.5)
+emitting = false
+amount = 25
+lifetime = 0.6
+one_shot = true
+explosiveness = 0.9
+process_material = SubResource("ParticleProcessMaterial_sparks")
+draw_pass_1 = SubResource("BoxMesh_spark")

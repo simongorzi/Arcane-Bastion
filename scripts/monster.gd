@@ -24,6 +24,17 @@ var _can_attack: bool = true
 var _attack_timer: float = 0.0
 var _is_dying: bool = false
 
+const ROAD_WAYPOINTS: Array[Vector3] = [
+	Vector3(0.0, 0.0, 48.0),
+	Vector3(-14.0, 0.0, 36.0),
+	Vector3(12.0, 0.0, 20.0),
+	Vector3(0.0, 0.0, 8.0),
+	Vector3(0.0, 0.0, -4.0),
+	Vector3(0.0, 0.0, -14.5)
+]
+
+var current_waypoint_idx: int = 1
+
 # Sdílená knihovna animací pro všechny kostlivce
 static var _shared_anim_lib: AnimationLibrary = null
 
@@ -120,68 +131,29 @@ func _physics_process(delta: float) -> void:
 		if _attack_timer <= 0.0:
 			_can_attack = true
 
-## Výpočet taktického cílového bodu (brány, obcházení věže, schody nahoru)
+## Výpočet taktického cílového bodu: pochod po S-silnici k Hradní Bráně
 func get_tactical_target_pos() -> Vector3:
-	if not is_instance_valid(player):
-		return global_position
+	# 1. Pokud je hráč blízko (<= 3.5m), monstrum na něj zaútočí
+	if is_instance_valid(player):
+		var dist_to_player = global_position.distance_to(player.global_position)
+		if dist_to_player <= 3.5:
+			return player.global_position
+
+	# 2. Pokud stojí v cestě Stone Knight (<= 3.2m), monstrum s ním bojuje
+	var knights = get_tree().get_nodes_in_group("stone_knights")
+	for k in knights:
+		if is_instance_valid(k) and global_position.distance_to(k.global_position) <= 3.2:
+			return k.global_position
+
+	# 3. Jinak pochoduje po trase waypointů směrem k Hradní Bráně
+	if current_waypoint_idx < ROAD_WAYPOINTS.size():
+		var wp = ROAD_WAYPOINTS[current_waypoint_idx]
+		if global_position.distance_to(wp) < 3.2 and current_waypoint_idx < ROAD_WAYPOINTS.size() - 1:
+			current_waypoint_idx += 1
+			wp = ROAD_WAYPOINTS[current_waypoint_idx]
+		return wp
 		
-	var p_pos: Vector3 = player.global_position
-	var my_pos: Vector3 = global_position
-	
-	var STAIRS_BOTTOM = Vector3(0.0, 0.0, 5.5)
-	var STAIRS_TOP = Vector3(0.0, 2.4, 0.2)
-	
-	# 1. Průchod vnějšími hradbami – navedení k nejbližší otevřené bráně
-	if my_pos.z > 26.5:
-		return Vector3(0.0, 0.0, 23.5) # Jižní hlavní brána
-	elif my_pos.x > 29.5:
-		return Vector3(27.0, 0.0, 3.5) # Východní obchodní brána
-	elif my_pos.x < -27.5:
-		return Vector3(-25.5, 0.0, -2.5) # Západní výpadová branka
-	elif my_pos.z < -24.5:
-		return Vector3(0.0, 0.0, -21.0) # Severní brána svatyně
-		
-	# 2. Hráč je nahoře na věži (Y > 1.4)
-	if p_pos.y > 1.4:
-		# Pokud už je kostlivec nahoře na platformě věže
-		if my_pos.y > 1.8:
-			return p_pos
-			
-		# Pokud je na schodech – běží přímo nahoru
-		if abs(my_pos.x) < 1.8 and my_pos.z <= 5.5 and my_pos.z >= 0.0:
-			return STAIRS_TOP
-			
-		# Pokud je za věží na severu (Z < 2.5) – musí věž obejít z východu nebo západu
-		if my_pos.z < 2.5:
-			var bypass_x = 5.8 if my_pos.x >= 0.0 else -5.8
-			var bypass_corner = Vector3(bypass_x, 0.0, 4.2)
-			if my_pos.distance_to(bypass_corner) < 1.5:
-				return STAIRS_BOTTOM
-			return bypass_corner
-			
-		# Na jižní straně nádvoří – běží přímo k patě schodů
-		return STAIRS_BOTTOM
-		
-	# 3. Hráč je dole na zemi
-	# Pokud je kostlivec nahoře na věži nebo na schodišti:
-	if my_pos.y > 0.5 and my_pos.z < 5.2:
-		# Pokud je ještě na platformě věže (za schody), navedeme ho nejprve do ústí schodů
-		if abs(my_pos.x) > 1.2 or my_pos.z < 0.2:
-			return STAIRS_TOP
-		# Již je v ústí schodů nebo na schodech -> seběhne rovně po schodech na zem
-		return STAIRS_BOTTOM
-		
-	# Pokud věž blokuje přímou linii na hráče
-	var blocks_tower = false
-	if (my_pos.z < -2.0 and p_pos.z > 2.0) or (my_pos.z > 2.0 and p_pos.z < -2.0):
-		if abs(my_pos.x) < 4.5 or abs(p_pos.x) < 4.5:
-			blocks_tower = true
-			
-	if blocks_tower:
-		var flank_x = 5.8 if my_pos.x >= 0.0 else -5.8
-		return Vector3(flank_x, 0.0, 0.0)
-		
-	return p_pos
+	return ROAD_WAYPOINTS[ROAD_WAYPOINTS.size() - 1]
 
 func _navigate_to_player(_delta: float) -> void:
 	var target_pos: Vector3 = get_tactical_target_pos()
@@ -227,12 +199,45 @@ func _navigate_to_player(_delta: float) -> void:
 			anim_player.play("Walking_A")
 
 func _handle_attack(_delta: float) -> void:
-	if _can_attack and is_instance_valid(player):
+	if not _can_attack:
+		return
+
+	# A. Útok na hráče
+	if is_instance_valid(player) and global_position.distance_to(player.global_position) <= attack_range:
 		_can_attack = false
 		_attack_timer = attack_cooldown
-		
 		if player.has_method("take_damage"):
 			player.take_damage(attack_damage)
+		_play_attack_anim()
+		return
+
+	# B. Útok na Stone Knighta
+	var knights = get_tree().get_nodes_in_group("stone_knights")
+	for k in knights:
+		if is_instance_valid(k) and global_position.distance_to(k.global_position) <= attack_range + 0.6:
+			_can_attack = false
+			_attack_timer = attack_cooldown
+			if k.has_method("take_damage"):
+				k.take_damage(attack_damage)
+			_play_attack_anim()
+			return
+
+	# C. Útok na Hradní Bránu
+	var gate = get_tree().get_first_node_in_group("fortress_gate")
+	if gate and is_instance_valid(gate) and global_position.distance_to(gate.global_position) <= 4.5:
+		_can_attack = false
+		_attack_timer = attack_cooldown
+		if gate.has_method("take_damage"):
+			gate.take_damage(10)
+		_play_attack_anim()
+
+func _play_attack_anim() -> void:
+	if not anim_player:
+		return
+	if anim_player.has_animation("Attack_A"):
+		anim_player.play("Attack_A")
+	elif anim_player.has_animation("1H_Melee_Attack"):
+		anim_player.play("1H_Melee_Attack")
 
 enum EnemyType { WARRIOR, SPRINTER, BRUTE }
 var enemy_type: EnemyType = EnemyType.WARRIOR
