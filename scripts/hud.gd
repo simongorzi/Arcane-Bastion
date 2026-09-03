@@ -313,7 +313,7 @@ func spend_essence(amount: int) -> bool:
 
 func _update_essence_ui() -> void:
 	if essence_label:
-		essence_label.text = "💎 Esence: %d" % soul_essences
+		essence_label.text = "💎 Essences: %d" % soul_essences
 		var t = create_tween()
 		t.tween_property(essence_label, "scale", Vector2(1.25, 1.25), 0.07)
 		t.tween_property(essence_label, "scale", Vector2.ONE, 0.12)

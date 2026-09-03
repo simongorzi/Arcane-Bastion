@@ -324,14 +324,13 @@ func die() -> void:
 		if player_node and player_node.has_method("add_screenshake"):
 			player_node.add_screenshake(0.04)
 
-		# Vytvoření zářivého krystalu (Soul Orb / Essence)
+		# Vytvoření zářivého krystalu (Soul Orb / Essence) na místě smrti monstra
 		var orb_scene = load("res://scenes/soul_orb.tscn")
 		if orb_scene:
 			var orb = orb_scene.instantiate()
 			var scene_root = get_tree().current_scene if get_tree().current_scene else get_parent()
 			scene_root.add_child(orb)
-			orb.global_position = global_position + Vector3(0, 0.8, 0)
-			orb.score_value = score_value
+			orb.setup(global_position, score_value)
 
 	var col = get_node_or_null("CollisionShape3D")
 	if col:

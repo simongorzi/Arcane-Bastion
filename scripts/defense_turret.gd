@@ -31,7 +31,7 @@ func _ready() -> void:
 	prompt_area.body_exited.connect(_on_body_exited)
 	
 	turret_head.visible = false
-	status_label.text = "[E] Postavit Věž\nCena: %d 💎 Esencí" % build_cost
+	status_label.text = "[E] Build Turret\nCost: %d 💎 Essences" % build_cost
 	status_label.modulate = Color(0.3, 0.9, 1.0)
 
 func _process(delta: float) -> void:
@@ -44,7 +44,7 @@ func _process(delta: float) -> void:
 			rune_marker.position.y = 1.2 + sin(_float_timer) * 0.1
 			
 		# Kontrola stisku klávesy E pro stavbu
-		if _player_in_range and Input.is_action_just_pressed("interact"):
+		if _player_in_range and (Input.is_action_just_pressed("interact") or Input.is_key_pressed(KEY_E)):
 			_try_build()
 			
 	else:
@@ -54,7 +54,7 @@ func _process(delta: float) -> void:
 			crystal.position.y = 2.8 + sin(_float_timer * 1.5) * 0.15
 			
 		# Upgrade na úroveň 2
-		if state == State.LEVEL_1 and _player_in_range and Input.is_action_just_pressed("interact"):
+		if state == State.LEVEL_1 and _player_in_range and (Input.is_action_just_pressed("interact") or Input.is_key_pressed(KEY_E)):
 			_try_upgrade()
 
 		# Automatické vyhledávání cílů a střelba
@@ -74,13 +74,13 @@ func _on_body_exited(body: Node) -> void:
 func _update_prompt() -> void:
 	if not _player_in_range:
 		if state == State.UNBUILT:
-			status_label.text = "🏛️ Obranná Věž\nCena: %d 💎" % build_cost
+			status_label.text = "🏛️ Defense Turret\nCost: %d 💎" % build_cost
 			status_label.modulate = Color(0.4, 0.8, 1.0, 0.8)
 		elif state == State.LEVEL_1:
-			status_label.text = "⚡ Magická Věž Lv.1\n[E] Vylepšit (%d 💎)" % upgrade_cost
+			status_label.text = "⚡ Arcane Turret Lv.1\n[E] Upgrade (%d 💎)" % upgrade_cost
 			status_label.modulate = Color(0.9, 0.7, 0.2, 0.8)
 		else:
-			status_label.text = "👑 Magická Věž Lv.2 MAX"
+			status_label.text = "👑 Arcane Turret Lv.2 MAX"
 			status_label.modulate = Color(1.0, 0.8, 0.2, 0.8)
 		return
 
@@ -89,17 +89,17 @@ func _update_prompt() -> void:
 
 	if state == State.UNBUILT:
 		if essences >= build_cost:
-			status_label.text = "★ STISKNI [E] PRO STAVBU VĚŽE! ★\n(Cena: %d 💎, Máš: %d 💎)" % [build_cost, essences]
+			status_label.text = "★ PRESS [E] TO BUILD TURRET! ★\n(Cost: %d 💎, Have: %d 💎)" % [build_cost, essences]
 			status_label.modulate = Color(0.3, 1.0, 0.4)
 		else:
-			status_label.text = "Potřebuješ %d 💎 Esencí!\n(Máš jen: %d 💎)" % [build_cost, essences]
+			status_label.text = "Need %d 💎 Essences!\n(You have: %d 💎)" % [build_cost, essences]
 			status_label.modulate = Color(1.0, 0.4, 0.3)
 	elif state == State.LEVEL_1:
 		if essences >= upgrade_cost:
-			status_label.text = "★ STISKNI [E] PRO VYLEPŠENÍ NA LV.2! ★\n(Cena: %d 💎 - Rychlopalba)" % upgrade_cost
+			status_label.text = "★ PRESS [E] TO UPGRADE TO LV.2! ★\n(Cost: %d 💎 - Rapid Fire)" % upgrade_cost
 			status_label.modulate = Color(1.0, 0.85, 0.2)
 		else:
-			status_label.text = "Vylepšení na Lv.2 stojí %d 💎!\n(Máš: %d 💎)" % [upgrade_cost, essences]
+			status_label.text = "Upgrade to Lv.2 costs %d 💎!\n(You have: %d 💎)" % [upgrade_cost, essences]
 			status_label.modulate = Color(0.9, 0.5, 0.3)
 
 func _try_build() -> void:

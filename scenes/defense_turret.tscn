@@ -160,8 +160,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.8, 0)
 billboard = 1
 no_depth_test = true
 render_priority = 20
-text = "[E] Postavit Věž
-Cena: 6 💎 Esencí"
+text = "[E] Build Turret
+Cost: 6 💎 Essences"
 font_size = 28
 outline_size = 8
 outline_color = Color(0, 0, 0, 0.9)
