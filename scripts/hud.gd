@@ -15,6 +15,9 @@ extends CanvasLayer
 @onready var combo_container: Control = get_node_or_null("Control/ComboContainer")
 @onready var combo_label: Label = get_node_or_null("Control/ComboContainer/ComboLabel")
 @onready var combo_bar: ProgressBar = get_node_or_null("Control/ComboContainer/ComboBar")
+@onready var essence_label: Label = get_node_or_null("Control/TopBar/EssencePanel/EssenceLabel")
+
+var soul_essences: int = 0
 
 # Pause Menu
 @onready var pause_panel: Control = get_node_or_null("Control/PausePanel")
@@ -296,6 +299,24 @@ func add_soul_gem(amount: int) -> void:
 	combo_timer = minf(COMBO_WINDOW, combo_timer + 0.8)
 	if combo_container and combo_container.modulate.a > 0.1:
 		_bounce_combo()
+
+func add_essence(amount: int = 1) -> void:
+	soul_essences += amount
+	_update_essence_ui()
+
+func spend_essence(amount: int) -> bool:
+	if soul_essences >= amount:
+		soul_essences -= amount
+		_update_essence_ui()
+		return true
+	return false
+
+func _update_essence_ui() -> void:
+	if essence_label:
+		essence_label.text = "💎 Esence: %d" % soul_essences
+		var t = create_tween()
+		t.tween_property(essence_label, "scale", Vector2(1.25, 1.25), 0.07)
+		t.tween_property(essence_label, "scale", Vector2.ONE, 0.12)
 
 func _update_combo_ui() -> void:
 	if not combo_container or not combo_label:

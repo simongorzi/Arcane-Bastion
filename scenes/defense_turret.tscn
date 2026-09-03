@@ -1,0 +1,175 @@
+[gd_scene load_steps=18 format=3 uid="uid://defenseturret001"]
+
+[ext_resource type="Script" path="res://scripts/defense_turret.gd" id="1_turret_script"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_pedestal"]
+height = 1.8
+radius = 1.1
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_stone"]
+albedo_color = Color(0.38, 0.4, 0.44, 1)
+roughness = 0.88
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_base"]
+material = SubResource("StandardMaterial3D_stone")
+top_radius = 1.2
+bottom_radius = 1.4
+height = 0.4
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_column"]
+material = SubResource("StandardMaterial3D_stone")
+top_radius = 0.85
+bottom_radius = 1.05
+height = 1.4
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_rune"]
+transparency = 1
+blend_mode = 1
+albedo_color = Color(0.2, 0.85, 1, 0.8)
+emission_enabled = true
+emission = Color(0.1, 0.75, 1, 1)
+emission_energy_multiplier = 4.0
+
+[sub_resource type="TorusMesh" id="TorusMesh_rune"]
+material = SubResource("StandardMaterial3D_rune")
+inner_radius = 0.7
+outer_radius = 0.95
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_crystal"]
+albedo_color = Color(0.15, 0.9, 1, 0.95)
+emission_enabled = true
+emission = Color(0.1, 0.8, 1, 1)
+emission_energy_multiplier = 5.0
+roughness = 0.1
+metallic = 0.8
+
+[sub_resource type="PrismMesh" id="PrismMesh_crystal_top"]
+material = SubResource("StandardMaterial3D_crystal")
+size = Vector3(0.65, 0.9, 0.65)
+
+[sub_resource type="PrismMesh" id="PrismMesh_crystal_bottom"]
+material = SubResource("StandardMaterial3D_crystal")
+size = Vector3(0.65, 0.9, 0.65)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_build"]
+emission_shape = 1
+emission_sphere_radius = 1.2
+direction = Vector3(0, 1, 0)
+spread = 45.0
+initial_velocity_min = 2.0
+initial_velocity_max = 5.0
+gravity = Vector3(0, -2.0, 0)
+scale_min = 0.1
+scale_max = 0.25
+color = Color(0.3, 0.9, 1, 0.9)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_spark"]
+shading_mode = 0
+albedo_color = Color(0.5, 0.95, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_spark"]
+material = SubResource("StandardMaterial3D_spark")
+size = Vector3(0.12, 0.12, 0.12)
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_muzzle"]
+direction = Vector3(0, 0, -1)
+spread = 20.0
+initial_velocity_min = 3.0
+initial_velocity_max = 6.0
+gravity = Vector3(0, 0, 0)
+scale_min = 0.08
+scale_max = 0.2
+color = Color(0.4, 0.95, 1, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_muzzle"]
+material = SubResource("StandardMaterial3D_spark")
+size = Vector3(0.1, 0.1, 0.1)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_prompt"]
+radius = 3.5
+
+[node name="DefenseTurret" type="Node3D" groups=["defense_turrets"]]
+script = ExtResource("1_turret_script")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+collision_layer = 1
+collision_mask = 7
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+shape = SubResource("CylinderShape3D_pedestal")
+
+[node name="PedestalMesh" type="Node3D" parent="."]
+
+[node name="Base" type="MeshInstance3D" parent="PedestalMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.2, 0)
+mesh = SubResource("CylinderMesh_base")
+
+[node name="Column" type="MeshInstance3D" parent="PedestalMesh"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+mesh = SubResource("CylinderMesh_column")
+
+[node name="RuneMarker" type="Node3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+
+[node name="Torus" type="MeshInstance3D" parent="RuneMarker"]
+transform = Transform3D(1, 0, 0, 0, -4.37114e-08, -1, 0, 1, -4.37114e-08, 0, 0, 0)
+mesh = SubResource("TorusMesh_rune")
+
+[node name="TurretHead" type="Node3D" parent="."]
+
+[node name="Crystal" type="Node3D" parent="TurretHead"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+
+[node name="CrystalTop" type="MeshInstance3D" parent="TurretHead/Crystal"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.25, 0)
+mesh = SubResource("PrismMesh_crystal_top")
+
+[node name="CrystalBottom" type="MeshInstance3D" parent="TurretHead/Crystal"]
+transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, -0.25, 0)
+mesh = SubResource("PrismMesh_crystal_bottom")
+
+[node name="CrystalLight" type="OmniLight3D" parent="TurretHead"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, 0)
+light_color = Color(0.2, 0.88, 1, 1)
+light_energy = 3.5
+omni_range = 7.0
+
+[node name="MuzzleParticles" type="GPUParticles3D" parent="TurretHead"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.6, -0.8)
+emitting = false
+amount = 12
+lifetime = 0.25
+one_shot = true
+explosiveness = 0.9
+process_material = SubResource("ParticleProcessMaterial_muzzle")
+draw_pass_1 = SubResource("BoxMesh_muzzle")
+
+[node name="BuildParticles" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
+emitting = false
+amount = 35
+lifetime = 0.8
+one_shot = true
+explosiveness = 0.85
+process_material = SubResource("ParticleProcessMaterial_build")
+draw_pass_1 = SubResource("BoxMesh_spark")
+
+[node name="StatusLabel" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.8, 0)
+billboard = 1
+no_depth_test = true
+render_priority = 20
+text = "[E] Postavit Věž
+Cena: 6 💎 Esencí"
+font_size = 28
+outline_size = 8
+outline_color = Color(0, 0, 0, 0.9)
+
+[node name="PromptArea" type="Area3D" parent="."]
+collision_layer = 0
+collision_mask = 2
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PromptArea"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.0, 0)
+shape = SubResource("SphereShape3D_prompt")

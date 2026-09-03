@@ -198,15 +198,17 @@ func _navigate_to_player(_delta: float) -> void:
 				push.y = 0
 				move_direction += push * ((1.3 - dist) / 1.3) * 0.5
 
-	# 2. Striktní klouzání podél zdí a objektů – zabrání protlačení do collideru
+	# 2. Aktivní vyproštění a hladké klouzání kolem zdí a objektů
 	if is_on_wall():
 		var wall_norm: Vector3 = get_wall_normal()
 		wall_norm.y = 0
 		if wall_norm.length_squared() > 0.01:
 			wall_norm = wall_norm.normalized()
-			var dot = move_direction.dot(wall_norm)
-			if dot < 0.0:
-				move_direction -= wall_norm * dot
+			# Vypočítáme tečnu ke zdi a otočíme ji směrem k cíli
+			var tangent = Vector3(-wall_norm.z, 0.0, wall_norm.x)
+			if tangent.dot(move_direction) < 0.0:
+				tangent = -tangent
+			move_direction = (move_direction * 0.35 + tangent * 0.85).normalized()
 
 	move_direction = move_direction.normalized()
 
@@ -322,12 +324,13 @@ func die() -> void:
 		if player_node and player_node.has_method("add_screenshake"):
 			player_node.add_screenshake(0.04)
 
-		# Vytvoření zářivého krystalu (Soul Orb)
+		# Vytvoření zářivého krystalu (Soul Orb / Essence)
 		var orb_scene = load("res://scenes/soul_orb.tscn")
 		if orb_scene:
 			var orb = orb_scene.instantiate()
-			get_tree().root.add_child(orb)
-			orb.global_position = global_position + Vector3(0, 0.4, 0)
+			var scene_root = get_tree().current_scene if get_tree().current_scene else get_parent()
+			scene_root.add_child(orb)
+			orb.global_position = global_position + Vector3(0, 0.8, 0)
 			orb.score_value = score_value
 
 	var col = get_node_or_null("CollisionShape3D")

@@ -1,43 +1,57 @@
-[gd_scene load_steps=8 format=3 uid="uid://soulorb001"]
+[gd_scene load_steps=12 format=3 uid="uid://soulorb001"]
 
 [ext_resource type="Script" path="res://scripts/soul_orb.gd" id="1_soul_script"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_gem"]
-albedo_color = Color(0.2, 0.9, 1, 0.9)
+albedo_color = Color(0.2, 0.95, 1, 0.95)
 emission_enabled = true
-emission = Color(0.1, 0.75, 1, 1)
-emission_energy_multiplier = 4.0
+emission = Color(0.1, 0.85, 1, 1)
+emission_energy_multiplier = 6.5
 roughness = 0.1
-metallic = 0.8
+metallic = 0.85
 
 [sub_resource type="PrismMesh" id="PrismMesh_gem_top"]
 material = SubResource("StandardMaterial3D_gem")
-size = Vector3(0.35, 0.45, 0.35)
+size = Vector3(0.45, 0.65, 0.45)
 
 [sub_resource type="PrismMesh" id="PrismMesh_gem_bottom"]
 material = SubResource("StandardMaterial3D_gem")
-size = Vector3(0.35, 0.45, 0.35)
+size = Vector3(0.45, 0.65, 0.45)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_beam"]
+transparency = 1
+blend_mode = 1
+albedo_color = Color(0.15, 0.85, 1, 0.35)
+emission_enabled = true
+emission = Color(0.2, 0.9, 1, 1)
+emission_energy_multiplier = 3.0
+
+[sub_resource type="CylinderMesh" id="CylinderMesh_beam"]
+material = SubResource("StandardMaterial3D_beam")
+top_radius = 0.08
+bottom_radius = 0.2
+height = 2.2
 
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_sparkles"]
 emission_shape = 1
-emission_sphere_radius = 0.3
+emission_sphere_radius = 0.4
 direction = Vector3(0, 1, 0)
-spread = 180.0
-initial_velocity_min = 0.5
-initial_velocity_max = 1.2
-gravity = Vector3(0, 0.5, 0)
-scale_min = 0.05
-scale_max = 0.12
-color = Color(0.3, 0.95, 1, 0.8)
+spread = 60.0
+initial_velocity_min = 0.8
+initial_velocity_max = 2.0
+gravity = Vector3(0, 0.8, 0)
+scale_min = 0.06
+scale_max = 0.15
+color = Color(0.4, 0.95, 1, 0.9)
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_motes"]
 shading_mode = 0
-albedo_color = Color(0.4, 0.95, 1, 1)
+albedo_color = Color(0.5, 1, 1, 1)
 
 [sub_resource type="SphereMesh" id="SphereMesh_mote"]
 material = SubResource("StandardMaterial3D_motes")
-radius = 0.05
-height = 0.1
+radius = 0.06
+height = 0.12
 
 [node name="SoulOrb" type="Node3D" groups=["soul_orbs"]]
 script = ExtResource("1_soul_script")
@@ -45,20 +59,24 @@ script = ExtResource("1_soul_script")
 [node name="MeshInstance3D" type="Node3D" parent="."]
 
 [node name="GemTop" type="MeshInstance3D" parent="MeshInstance3D"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.1, 0)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.15, 0)
 mesh = SubResource("PrismMesh_gem_top")
 
 [node name="GemBottom" type="MeshInstance3D" parent="MeshInstance3D"]
-transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, -0.1, 0)
+transform = Transform3D(1, 0, 0, 0, -1, 8.74228e-08, 0, -8.74228e-08, -1, 0, -0.15, 0)
 mesh = SubResource("PrismMesh_gem_bottom")
 
+[node name="LightBeam" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.1, 0)
+mesh = SubResource("CylinderMesh_beam")
+
 [node name="OmniLight3D" type="OmniLight3D" parent="."]
-light_color = Color(0.2, 0.85, 1, 1)
-light_energy = 2.5
-omni_range = 3.5
+light_color = Color(0.2, 0.88, 1, 1)
+light_energy = 3.8
+omni_range = 4.5
 
 [node name="Particles" type="GPUParticles3D" parent="."]
-amount = 8
-lifetime = 0.6
+amount = 14
+lifetime = 0.75
 process_material = SubResource("ParticleProcessMaterial_sparkles")
 draw_pass_1 = SubResource("SphereMesh_mote")
