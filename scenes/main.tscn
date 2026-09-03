@@ -27,49 +27,43 @@
 [ext_resource type="PackedScene" path="res://assets/fantasy-town/Models/GLB format/wall-arch.glb" id="25_wall_arch"]
 [ext_resource type="Script" path="res://scripts/main.gd" id="26_main_script"]
 
-[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_twilight"]
-sky_top_color = Color(0.12, 0.18, 0.35, 1)
-sky_horizon_color = Color(0.38, 0.3, 0.48, 1)
-ground_bottom_color = Color(0.08, 0.1, 0.14, 1)
-ground_horizon_color = Color(0.2, 0.18, 0.28, 1)
-sun_angle_max = 25.0
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_clear"]
+sky_top_color = Color(0.35, 0.56, 0.82, 1)
+sky_horizon_color = Color(0.72, 0.77, 0.85, 1)
+ground_bottom_color = Color(0.24, 0.28, 0.32, 1)
+ground_horizon_color = Color(0.55, 0.62, 0.68, 1)
+sun_angle_max = 30.0
 
-[sub_resource type="Sky" id="Sky_twilight"]
-sky_material = SubResource("ProceduralSkyMaterial_twilight")
+[sub_resource type="Sky" id="Sky_clear"]
+sky_material = SubResource("ProceduralSkyMaterial_clear")
 
-[sub_resource type="Environment" id="Environment_twilight"]
+[sub_resource type="Environment" id="Environment_clear"]
 background_mode = 2
-sky = SubResource("Sky_twilight")
+sky = SubResource("Sky_clear")
 ambient_light_source = 3
-ambient_light_color = Color(0.24, 0.28, 0.4, 1)
-ambient_light_sky_contribution = 0.45
+ambient_light_color = Color(0.68, 0.74, 0.84, 1)
+ambient_light_sky_contribution = 0.65
+ambient_light_energy = 0.85
 tonemap_mode = 3
-tonemap_exposure = 1.05
+tonemap_exposure = 1.12
 ssao_enabled = true
 ssao_radius = 2.0
-ssao_intensity = 3.0
-ssao_power = 1.6
+ssao_intensity = 2.0
+ssao_power = 1.4
 glow_enabled = true
-glow_intensity = 0.85
-glow_bloom = 0.3
+glow_intensity = 0.7
+glow_bloom = 0.2
 glow_blend_mode = 0
 fog_enabled = true
-fog_light_color = Color(0.1, 0.12, 0.2, 1)
-fog_light_energy = 0.95
-fog_sun_scatter = 0.25
-fog_density = 0.02
-fog_aerial_perspective = 0.7
-fog_sky_affect = 0.95
-fog_depth_begin = 36.0
-fog_depth_end = 92.0
-volumetric_fog_enabled = true
-volumetric_fog_density = 0.025
-volumetric_fog_albedo = Color(0.12, 0.14, 0.22, 1)
-volumetric_fog_emission = Color(0.03, 0.04, 0.08, 1)
-volumetric_fog_length = 88.0
+fog_light_color = Color(0.68, 0.75, 0.86, 1)
+fog_light_energy = 0.5
+fog_density = 0.005
+fog_depth_begin = 60.0
+fog_depth_end = 150.0
+volumetric_fog_enabled = false
 adjustment_enabled = true
-adjustment_contrast = 1.15
-adjustment_saturation = 1.2
+adjustment_contrast = 1.05
+adjustment_saturation = 1.12
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_floor"]
 size = Vector3(180, 1, 180)
@@ -158,17 +152,16 @@ size = Vector3(2.2, 0.75, 0.6)
 script = ExtResource("26_main_script")
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="."]
-environment = SubResource("Environment_twilight")
+environment = SubResource("Environment_clear")
 
-[node name="MoonLight" type="DirectionalLight3D" parent="."]
-transform = Transform3D(0.707107, -0.5, 0.5, 0, 0.707107, 0.707107, -0.707107, -0.5, 0.5, 0, 20, 0)
-light_color = Color(0.75, 0.84, 1, 1)
-light_energy = 0.95
-light_volumetric_fog_energy = 1.2
+[node name="SunLight" type="DirectionalLight3D" parent="."]
+transform = Transform3D(0.788011, -0.422618, 0.448011, 0, 0.727786, 0.685805, -0.615661, -0.540422, 0.573499, 0, 25, 0)
+light_color = Color(1, 0.95, 0.88, 1)
+light_energy = 1.65
 shadow_enabled = true
-shadow_bias = 0.03
-shadow_blur = 1.4
-directional_shadow_max_distance = 85.0
+shadow_bias = 0.02
+shadow_blur = 1.2
+directional_shadow_max_distance = 120.0
 
 [node name="Environment" type="Node3D" parent="."]
 
@@ -185,120 +178,6 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, -0.5, 0)
 mesh = SubResource("BoxMesh_floor")
 
 [node name="Citadel" type="Node3D" parent="Environment"]
-
-[node name="CentralTower" type="Node3D" parent="Environment"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -2)
-
-[node name="TowerCollisions" type="StaticBody3D" parent="Environment/CentralTower"]
-collision_layer = 1
-collision_mask = 7
-
-[node name="Col_Platform" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
-shape = SubResource("BoxShape3D_tower_plat")
-
-[node name="Col_StairsRamp" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
-transform = Transform3D(1, 0, 0, 0, 0.8290376, -0.5591929, 0, 0.5591929, 0.8290376, 0, 1.2, 5.95)
-shape = SubResource("BoxShape3D_tower_ramp")
-
-[node name="Col_Parapet_N" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.775, -4)
-shape = SubResource("BoxShape3D_tower_parapet_ns")
-
-[node name="Col_Parapet_E" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.775, 0)
-shape = SubResource("BoxShape3D_tower_parapet_ew")
-
-[node name="Col_Parapet_W" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2.775, 0)
-shape = SubResource("BoxShape3D_tower_parapet_ew")
-
-[node name="Col_Parapet_S_Left" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9, 2.775, 4)
-shape = SubResource("BoxShape3D_tower_parapet_short")
-
-[node name="Col_Parapet_S_Right" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9, 2.775, 4)
-shape = SubResource("BoxShape3D_tower_parapet_short")
-
-[node name="Col_Pillar_NW" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8, 2.925, -3.8)
-shape = SubResource("BoxShape3D_tower_pillar")
-
-[node name="Col_Pillar_NE" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8, 2.925, -3.8)
-shape = SubResource("BoxShape3D_tower_pillar")
-
-[node name="Col_Pillar_SW" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8, 2.925, 3.8)
-shape = SubResource("BoxShape3D_tower_pillar")
-
-[node name="Col_Pillar_SE" type="CollisionShape3D" parent="Environment/CentralTower/TowerCollisions"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8, 2.925, 3.8)
-shape = SubResource("BoxShape3D_tower_pillar")
-
-[node name="PlatformMesh" type="MeshInstance3D" parent="Environment/CentralTower"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, 0)
-mesh = SubResource("BoxMesh_tower_platform")
-
-[node name="StairsVisual" parent="Environment/CentralTower" instance=ExtResource("18_stairs")]
-transform = Transform3D(-1.66e-07, 0, 3.2, 0, 2.4, 0, -3.8, 0, -1.39e-07, 0, 0, 5.9)
-
-[node name="Pillar_NW" parent="Environment/CentralTower" instance=ExtResource("19_pillar")]
-transform = Transform3D(1.1, 0, 0, 0, 1.05, 0, 0, 0, 1.1, -3.8, 2.4, -3.8)
-
-[node name="Pillar_NE" parent="Environment/CentralTower" instance=ExtResource("19_pillar")]
-transform = Transform3D(1.1, 0, 0, 0, 1.05, 0, 0, 0, 1.1, 3.8, 2.4, -3.8)
-
-[node name="Pillar_SW" parent="Environment/CentralTower" instance=ExtResource("19_pillar")]
-transform = Transform3D(1.1, 0, 0, 0, 1.05, 0, 0, 0, 1.1, -3.8, 2.4, 3.8)
-
-[node name="Pillar_SE" parent="Environment/CentralTower" instance=ExtResource("19_pillar")]
-transform = Transform3D(1.1, 0, 0, 0, 1.05, 0, 0, 0, 1.1, 3.8, 2.4, 3.8)
-
-[node name="Mesh_Parapet_N" type="MeshInstance3D" parent="Environment/CentralTower"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.775, -4)
-mesh = SubResource("BoxMesh_parapet_ns")
-
-[node name="Mesh_Parapet_E" type="MeshInstance3D" parent="Environment/CentralTower"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4, 2.775, 0)
-mesh = SubResource("BoxMesh_parapet_ew")
-
-[node name="Mesh_Parapet_W" type="MeshInstance3D" parent="Environment/CentralTower"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4, 2.775, 0)
-mesh = SubResource("BoxMesh_parapet_ew")
-
-[node name="Mesh_Parapet_S_Left" type="MeshInstance3D" parent="Environment/CentralTower"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -2.9, 2.775, 4)
-mesh = SubResource("BoxMesh_parapet_short")
-
-[node name="Mesh_Parapet_S_Right" type="MeshInstance3D" parent="Environment/CentralTower"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.9, 2.775, 4)
-mesh = SubResource("BoxMesh_parapet_short")
-
-[node name="TowerAltarLight" type="OmniLight3D" parent="Environment/CentralTower"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 3.4, 0)
-light_color = Color(0.3, 0.85, 1, 1)
-light_energy = 3.5
-omni_range = 9.0
-
-[node name="TowerTorch_NW" type="OmniLight3D" parent="Environment/CentralTower"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -3.8, 3.6, -3.8)
-light_color = Color(1, 0.65, 0.25, 1)
-light_energy = 2.5
-omni_range = 6.0
-
-[node name="TowerTorch_NE" type="OmniLight3D" parent="Environment/CentralTower"]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.8, 3.6, -3.8)
-light_color = Color(1, 0.65, 0.25, 1)
-light_energy = 2.5
-omni_range = 6.0
-
-[node name="ZoneGate" parent="Environment" instance=ExtResource("23_zone_gate")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -22)
-
-[node name="HealingWell" parent="Environment" instance=ExtResource("24_healing_well")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, -28)
 
 [node name="NatureAndProps" type="Node3D" parent="Environment"]
 
@@ -405,7 +284,7 @@ transform = Transform3D(4.5, 0, 0, 0, 4.5, 0, 0, 0, 4.5, -44, 0, 18)
 transform = Transform3D(3.8, 0, 0, 0, 3.5, 0, 0, 0, 3.8, -40, 0, 2)
 
 [node name="Player" parent="." instance=ExtResource("1_player")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 2.7, -2)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2, -10)
 
 [node name="WaveManager" type="Node" parent="."]
 script = ExtResource("22_wave_mgr")
